@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Link } from "react-router-dom";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -10,15 +11,15 @@ export function MainLayout ({ children }: MainLayoutProps) {
       <aside className="w-64 bg-gray-800 p-4">
         <h1 className="text-2xl font-bold mb-6">GymTracker</h1>
         < nav className="flex flex-col gap-3">
-          <a href="#" className="hover:bg-gray-700 p-2 rounded">
+          <Link to="/" className="hover:bg-gray-700 p-2 rounded">
             Dashboard
-          </a>
-          <a href="#" className="hover:bg-gray-600 p-2 rounded">
+          </Link>
+          <Link to="/students" className="hover:bg-gray-600 p-2 rounded">
             Alunos
-          </a>
-          <a href="#" className="hover:bg-gray-600 p-2 rounded">
+          </Link>
+          <Link to="/workouts" className="hover:bg-gray-600 p-2 rounded">
             Treinos
-          </a>
+          </Link>
         </nav>
       </aside>
       <div className="flex-1 flex flex-col">
