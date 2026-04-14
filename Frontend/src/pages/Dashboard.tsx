@@ -1,4 +1,5 @@
 import { Card } from "../components/Card";
+import { StudentsChart } from "../components/Students";
 
 export function Dashboard() {
     return (
@@ -11,6 +12,9 @@ export function Dashboard() {
                 <Card title="Crescimento" value="+12%" />
                 <Card title="Feedback Positivo" value="89%" />
                 <Card title="Feedback Negativo" value="11%" />
+            </div>
+            <div className="mt-6">
+                <StudentsChart />
             </div>
         </div>
     );
