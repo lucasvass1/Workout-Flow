@@ -1,0 +1,36 @@
+import { type Student } from '../types/students';
+
+export const students: Student[] = [
+  { id: 1, name: 'Alice', age: 20, plan: 'Basic' },
+  { id: 2, name: 'Lucas', age: 22, plan: 'Premium' },
+  { id: 3, name: 'Charlie', age: 19, plan: 'Basic' },
+  { id: 4, name: 'Diana', age: 21, plan: 'Premium' },
+  { id: 5, name: 'Leticia', age: 23, plan: 'Basic' },
+  { id: 6, name: 'Pedro', age: 20, plan: 'Premium' },
+  { id: 7, name: 'Maria', age: 22, plan: 'Basic' },
+  { id: 8, name: 'João', age: 19, plan: 'Premium' },
+  { id: 9, name: 'Ana', age: 21, plan: 'Basic' },
+  { id: 10, name: 'Carlos', age: 23, plan: 'Premium' },
+
+  { id: 11, name: 'Bruno', age: 25, plan: 'Basic' },
+  { id: 12, name: 'Fernanda', age: 28, plan: 'Premium' },
+  { id: 13, name: 'Rafael', age: 24, plan: 'Basic' },
+  { id: 14, name: 'Juliana', age: 27, plan: 'Premium' },
+  { id: 15, name: 'Gustavo', age: 26, plan: 'Basic' },
+  { id: 16, name: 'Camila', age: 22, plan: 'Premium' },
+  { id: 17, name: 'Diego', age: 30, plan: 'Basic' },
+  { id: 18, name: 'Patricia', age: 29, plan: 'Premium' },
+  { id: 19, name: 'André', age: 31, plan: 'Basic' },
+  { id: 20, name: 'Beatriz', age: 24, plan: 'Premium' },
+
+  { id: 21, name: 'Eduardo', age: 33, plan: 'Basic' },
+  { id: 22, name: 'Larissa', age: 21, plan: 'Premium' },
+  { id: 23, name: 'Felipe', age: 28, plan: 'Basic' },
+  { id: 24, name: 'Renata', age: 26, plan: 'Premium' },
+  { id: 25, name: 'Marcelo', age: 35, plan: 'Basic' },
+  { id: 26, name: 'Vanessa', age: 27, plan: 'Premium' },
+  { id: 27, name: 'Thiago', age: 29, plan: 'Basic' },
+  { id: 28, name: 'Aline', age: 23, plan: 'Premium' },
+  { id: 29, name: 'Roberto', age: 32, plan: 'Basic' },
+  { id: 30, name: 'Sabrina', age: 25, plan: 'Premium' },
+];
