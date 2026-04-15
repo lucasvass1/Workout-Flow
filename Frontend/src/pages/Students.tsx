@@ -9,6 +9,10 @@ export function Students() {
   const [age, setAge] = useState("");
   const [plan, setPlan] = useState("");
 
+  function handleDelete(id: number) {
+    setStudents((prev) => prev.filter((student) => student.id !== id));
+  }
+
   function handleAddStudent(e: React.FormEvent) {
     e.preventDefault();
 
@@ -21,7 +25,6 @@ export function Students() {
 
     setStudents((prev) => [...prev, newStudent]);
 
-    // limpar formulário
     setName("");
     setAge("");
     setPlan("");
@@ -29,7 +32,6 @@ export function Students() {
 
   return (
     <div className="flex flex-col gap-6">
-      
       <h1 className="text-3xl font-bold">Alunos</h1>
 
       {/* Formulário */}
@@ -71,6 +73,7 @@ export function Students() {
               <th className="py-2">Nome</th>
               <th>Idade</th>
               <th>Plano</th>
+              <th>Ações</th>
             </tr>
           </thead>
 
@@ -80,12 +83,19 @@ export function Students() {
                 <td className="py-2">{student.name}</td>
                 <td>{student.age}</td>
                 <td>{student.plan}</td>
+                <td>
+                  <button
+                    onClick={() => handleDelete(student.id)}
+                    className="text-red-400 hover:text-red-600"
+                  >
+                    Deletar
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-
     </div>
   );
 }
