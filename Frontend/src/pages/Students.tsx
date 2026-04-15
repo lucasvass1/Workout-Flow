@@ -4,27 +4,53 @@ import { students as initialStudents } from "../services/students";
 
 export function Students() {
   const [students, setStudents] = useState<Student[]>(initialStudents);
-
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
   const [plan, setPlan] = useState("");
+  const [editingId, setEditingId] = useState<number | null>(null);
 
   function handleDelete(id: number) {
     setStudents((prev) => prev.filter((student) => student.id !== id));
   }
 
-  function handleAddStudent(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    const newStudent: Student = {
-      id: Date.now(),
-      name,
-      age: Number(age),
-      plan,
-    };
+    if (editingId !== null) {
+      setStudents((prev) =>
+        prev.map((student) =>
+          student.id === editingId
+            ? { ...student, name, age: Number(age), plan }
+            : student
+        )
+      );
 
-    setStudents((prev) => [...prev, newStudent]);
+      setEditingId(null);
+    } else {
+      const newStudent: Student = {
+        id: Date.now(),
+        name,
+        age: Number(age),
+        plan,
+      };
 
+      setStudents((prev) => [...prev, newStudent]);
+    }
+
+    setName("");
+    setAge("");
+    setPlan("");
+  }
+
+  function handleEdit(student: Student) {
+    setEditingId(student.id);
+    setName(student.name);
+    setAge(String(student.age));
+    setPlan(student.plan);
+  }
+
+  function handleCancelEdit() {
+    setEditingId(null);
     setName("");
     setAge("");
     setPlan("");
@@ -34,9 +60,8 @@ export function Students() {
     <div className="flex flex-col gap-6">
       <h1 className="text-3xl font-bold">Alunos</h1>
 
-      {/* Formulário */}
       <form
-        onSubmit={handleAddStudent}
+        onSubmit={handleSubmit}
         className="bg-gray-800 p-4 rounded-xl flex gap-3"
       >
         <input
@@ -61,11 +86,20 @@ export function Students() {
         />
 
         <button className="bg-blue-600 px-4 rounded">
-          Adicionar
+          {editingId !== null ? "Atualizar" : "Adicionar"}
         </button>
+
+        {editingId !== null && (
+          <button
+            type="button"
+            onClick={handleCancelEdit}
+            className="bg-gray-600 px-4 rounded"
+          >
+            Cancelar
+          </button>
+        )}
       </form>
 
-      {/* Tabela */}
       <div className="bg-gray-800 p-4 rounded-xl">
         <table className="w-full text-left">
           <thead>
@@ -83,7 +117,14 @@ export function Students() {
                 <td className="py-2">{student.name}</td>
                 <td>{student.age}</td>
                 <td>{student.plan}</td>
-                <td>
+                <td className="flex gap-2">
+                  <button
+                    onClick={() => handleEdit(student)}
+                    className="text-blue-400 hover:text-blue-600"
+                  >
+                    Editar
+                  </button>
+
                   <button
                     onClick={() => handleDelete(student.id)}
                     className="text-red-400 hover:text-red-600"
