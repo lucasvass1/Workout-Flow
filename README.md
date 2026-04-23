@@ -7,10 +7,6 @@ https://workout-flow-fj5g.vercel.app/
 
 ---
 
-## 📸 Preview
-
-Interface moderna com dashboard, gestão de alunos e experiência estilo SaaS.
-
 ---
 
 ## 🚀 Funcionalidades
