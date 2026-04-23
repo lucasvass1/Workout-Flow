@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { studentSchema } from "../Schemas/StudentsSchema";
 import type { StudentFormData } from "../Schemas/StudentsSchema";
+import toast from "react-hot-toast";
 
 type ModalProps = {
   isOpen: boolean;
@@ -49,6 +50,7 @@ export function Students() {
 
   function handleDelete(id: number) {
     setStudents((prev) => prev.filter((student) => student.id !== id));
+    toast.success("Aluno excluído com sucesso!");
   }
 
   function onSubmit(data: StudentFormData) {
@@ -58,6 +60,7 @@ export function Students() {
           student.id === editingId ? { ...student, ...data } : student
         )
       );
+      toast.success("Aluno atualizado com sucesso");
       setEditingId(null);
     } else {
       setStudents((prev) => {
@@ -67,6 +70,7 @@ export function Students() {
             : 1;
         return [...prev, { id: nextId, ...data }];
       });
+      toast.success("Aluno criado com sucesso");
     }
 
     reset();
