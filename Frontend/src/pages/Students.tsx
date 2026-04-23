@@ -1,15 +1,41 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { type Student } from "../types/students";
 import { students as initialStudents } from "../services/students";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { studentSchema} from "../Schemas/StudentsSchema";
+import { studentSchema } from "../Schemas/StudentsSchema";
 import type { StudentFormData } from "../Schemas/StudentsSchema";
+
+type ModalProps = {
+  isOpen: boolean;
+  onClose: () => void;
+  children: ReactNode;
+};
+
+function Modal({ isOpen, onClose, children }: ModalProps) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <div className="w-full max-w-lg rounded-xl bg-gray-800 p-6 relative">
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute top-3 right-3 text-gray-400 hover:text-white"
+        >
+          ✕
+        </button>
+        {children}
+      </div>
+    </div>
+  );
+}
 
 export function Students() {
   const [students, setStudents] = useState<Student[]>(initialStudents);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const {
     register,
@@ -36,28 +62,27 @@ export function Students() {
     } else {
       setStudents((prev) => {
         const nextId =
-          prev.length > 0 ? Math.max(...prev.map((student) => student.id)) + 1 : 1;
-        const newStudent: Student = {
-          id: nextId,
-          ...data,
-        };
-        return [...prev, newStudent];
+          prev.length > 0
+            ? Math.max(...prev.map((student) => student.id)) + 1
+            : 1;
+        return [...prev, { id: nextId, ...data }];
       });
     }
 
     reset();
+    setIsModalOpen(false);
   }
 
   function handleEdit(student: Student) {
     setEditingId(student.id);
-
-    // preenche o formulário
+    setIsModalOpen(true);
     setValue("name", student.name);
     setValue("age", student.age);
     setValue("plan", student.plan);
   }
 
-  function handleCancelEdit() {
+  function handleCloseModal() {
+    setIsModalOpen(false);
     setEditingId(null);
     reset();
   }
@@ -66,12 +91,26 @@ export function Students() {
     <div className="flex flex-col gap-6">
       <h1 className="text-3xl font-bold">Alunos</h1>
 
-      
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="bg-gray-800 p-4 rounded-xl flex gap-3 items-start"
+      <button
+        onClick={() => {
+          setIsModalOpen(true);
+          setEditingId(null);
+          reset();
+        }}
+        className="bg-green-600 px-4 py-2 rounded w-fit"
       >
-        <div className="flex flex-col">
+        + Novo aluno
+      </button>
+
+      <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
+        <h2 className="text-xl font-bold mb-4">
+          {editingId ? "Editar aluno" : "Novo aluno"}
+        </h2>
+
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex flex-col gap-3"
+        >
           <input
             {...register("name")}
             placeholder="Nome"
@@ -82,9 +121,7 @@ export function Students() {
               {errors.name.message}
             </span>
           )}
-        </div>
 
-        <div className="flex flex-col">
           <input
             type="number"
             {...register("age", { valueAsNumber: true })}
@@ -96,9 +133,7 @@ export function Students() {
               {errors.age.message}
             </span>
           )}
-        </div>
 
-        <div className="flex flex-col">
           <input
             {...register("plan")}
             placeholder="Plano"
@@ -109,24 +144,13 @@ export function Students() {
               {errors.plan.message}
             </span>
           )}
-        </div>
 
-        <button className="bg-blue-600 px-4 py-2 rounded h-fit">
-          {editingId !== null ? "Atualizar" : "Adicionar"}
-        </button>
-
-        {editingId !== null && (
-          <button
-            type="button"
-            onClick={handleCancelEdit}
-            className="bg-gray-600 px-4 py-2 rounded h-fit"
-          >
-            Cancelar
+          <button className="bg-blue-600 py-2 rounded mt-2">
+            {editingId ? "Atualizar" : "Cadastrar"}
           </button>
-        )}
-      </form>
+        </form>
+      </Modal>
 
-      
       <div className="bg-gray-800 p-4 rounded-xl">
         <table className="w-full text-left">
           <thead>
