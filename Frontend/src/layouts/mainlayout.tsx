@@ -14,7 +14,7 @@ export function MainLayout ({ children }: MainLayoutProps) {
     { name: "Treinos", path: "/workouts", icon: Dumbbell },
   ];
   return (
-    <div className="flex h-screen bg-gray-900 text-white">
+    <div className="flex min-h-screen bg-gray-900 text-white">
       <aside className="w-64 bg-gray-800 p-4 flex flex-col">
         <h1 className="text-2xl font-bold mb-8">GymTracker</h1>
         <nav className="flex flex-col gap-2">
