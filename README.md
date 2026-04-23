@@ -7,8 +7,6 @@ https://workout-flow-fj5g.vercel.app/
 
 ---
 
----
-
 ## 🚀 Funcionalidades
 
 ### 📊 Dashboard
