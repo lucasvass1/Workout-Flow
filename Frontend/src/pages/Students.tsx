@@ -2,90 +2,116 @@ import { useState } from "react";
 import { type Student } from "../types/students";
 import { students as initialStudents } from "../services/students";
 
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { studentSchema} from "../Schemas/StudentsSchema";
+import type { StudentFormData } from "../Schemas/StudentsSchema";
+
 export function Students() {
   const [students, setStudents] = useState<Student[]>(initialStudents);
-  const [name, setName] = useState("");
-  const [age, setAge] = useState("");
-  const [plan, setPlan] = useState("");
   const [editingId, setEditingId] = useState<number | null>(null);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    formState: { errors },
+  } = useForm<StudentFormData>({
+    resolver: zodResolver(studentSchema),
+  });
 
   function handleDelete(id: number) {
     setStudents((prev) => prev.filter((student) => student.id !== id));
   }
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-
+  function onSubmit(data: StudentFormData) {
     if (editingId !== null) {
       setStudents((prev) =>
         prev.map((student) =>
-          student.id === editingId
-            ? { ...student, name, age: Number(age), plan }
-            : student
+          student.id === editingId ? { ...student, ...data } : student
         )
       );
-
       setEditingId(null);
     } else {
-      const newStudent: Student = {
-        id: Date.now(),
-        name,
-        age: Number(age),
-        plan,
-      };
-
-      setStudents((prev) => [...prev, newStudent]);
+      setStudents((prev) => {
+        const nextId =
+          prev.length > 0 ? Math.max(...prev.map((student) => student.id)) + 1 : 1;
+        const newStudent: Student = {
+          id: nextId,
+          ...data,
+        };
+        return [...prev, newStudent];
+      });
     }
 
-    setName("");
-    setAge("");
-    setPlan("");
+    reset();
   }
 
   function handleEdit(student: Student) {
     setEditingId(student.id);
-    setName(student.name);
-    setAge(String(student.age));
-    setPlan(student.plan);
+
+    // preenche o formulário
+    setValue("name", student.name);
+    setValue("age", student.age);
+    setValue("plan", student.plan);
   }
 
   function handleCancelEdit() {
     setEditingId(null);
-    setName("");
-    setAge("");
-    setPlan("");
+    reset();
   }
 
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-3xl font-bold">Alunos</h1>
 
+      
       <form
-        onSubmit={handleSubmit}
-        className="bg-gray-800 p-4 rounded-xl flex gap-3"
+        onSubmit={handleSubmit(onSubmit)}
+        className="bg-gray-800 p-4 rounded-xl flex gap-3 items-start"
       >
-        <input
-          className="bg-gray-700 p-2 rounded text-white"
-          placeholder="Nome"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
+        <div className="flex flex-col">
+          <input
+            {...register("name")}
+            placeholder="Nome"
+            className="bg-gray-700 p-2 rounded text-white"
+          />
+          {errors.name && (
+            <span className="text-red-400 text-sm">
+              {errors.name.message}
+            </span>
+          )}
+        </div>
 
-        <input
-          className="bg-gray-700 p-2 rounded text-white"
-          placeholder="Idade"
-          value={age}
-          onChange={(e) => setAge(e.target.value)}
-        />
+        <div className="flex flex-col">
+          <input
+            type="number"
+            {...register("age", { valueAsNumber: true })}
+            placeholder="Idade"
+            className="bg-gray-700 p-2 rounded text-white"
+          />
+          {errors.age && (
+            <span className="text-red-400 text-sm">
+              {errors.age.message}
+            </span>
+          )}
+        </div>
 
-        <input
-          className="bg-gray-700 p-2 rounded text-white"
-          placeholder="Plano"
-          value={plan}
-          onChange={(e) => setPlan(e.target.value)}
-        />
+        <div className="flex flex-col">
+          <input
+            {...register("plan")}
+            placeholder="Plano"
+            className="bg-gray-700 p-2 rounded text-white"
+          />
+          {errors.plan && (
+            <span className="text-red-400 text-sm">
+              {errors.plan.message}
+            </span>
+          )}
+        </div>
 
-        <button className="bg-blue-600 px-4 rounded">
+        <button className="bg-blue-600 px-4 py-2 rounded h-fit">
           {editingId !== null ? "Atualizar" : "Adicionar"}
         </button>
 
@@ -93,13 +119,14 @@ export function Students() {
           <button
             type="button"
             onClick={handleCancelEdit}
-            className="bg-gray-600 px-4 rounded"
+            className="bg-gray-600 px-4 py-2 rounded h-fit"
           >
             Cancelar
           </button>
         )}
       </form>
 
+      
       <div className="bg-gray-800 p-4 rounded-xl">
         <table className="w-full text-left">
           <thead>
