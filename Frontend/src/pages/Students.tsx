@@ -1,12 +1,15 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { type Student } from "../types/students";
-import { students as initialStudents } from "../services/students";
-
+import {
+  getStudents,
+  createStudent,
+  updateStudent,
+  deleteStudent,
+} from "../services/api.ts";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { studentSchema } from "../Schemas/StudentsSchema";
 import type { StudentFormData } from "../Schemas/StudentsSchema";
-import toast from "react-hot-toast";
 
 type ModalProps = {
   isOpen: boolean;
@@ -19,11 +22,11 @@ function Modal({ isOpen, onClose, children }: ModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-lg rounded-xl bg-gray-800 p-6 relative">
+      <div className="relative w-full max-w-lg rounded-xl bg-gray-800 p-6">
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-3 right-3 text-gray-400 hover:text-white"
+          className="absolute right-3 top-3 text-gray-400 hover:text-white"
         >
           ✕
         </button>
@@ -34,9 +37,18 @@ function Modal({ isOpen, onClose, children }: ModalProps) {
 }
 
 export function Students() {
-  const [students, setStudents] = useState<Student[]>(initialStudents);
+  const [students, setStudents] = useState<Student[]>([]);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    async function loadStudents() {
+      const data = await getStudents();
+      setStudents(data);
+    }
+
+    loadStudents();
+  }, []);
 
   const {
     register,
@@ -48,32 +60,25 @@ export function Students() {
     resolver: zodResolver(studentSchema),
   });
 
-  function handleDelete(id: number) {
-    setStudents((prev) => prev.filter((student) => student.id !== id));
-    toast.success("Aluno excluído com sucesso!");
+  async function handleDelete(id: number) {
+    await deleteStudent(id);
+
+    const updated = await getStudents();
+    setStudents(updated);
   }
 
-  function onSubmit(data: StudentFormData) {
+  async function onSubmit(data: StudentFormData) {
     if (editingId !== null) {
-      setStudents((prev) =>
-        prev.map((student) =>
-          student.id === editingId ? { ...student, ...data } : student
-        )
-      );
-      toast.success("Aluno atualizado com sucesso");
-      setEditingId(null);
+      await updateStudent(editingId, data);
     } else {
-      setStudents((prev) => {
-        const nextId =
-          prev.length > 0
-            ? Math.max(...prev.map((student) => student.id)) + 1
-            : 1;
-        return [...prev, { id: nextId, ...data }];
-      });
-      toast.success("Aluno criado com sucesso");
+      await createStudent(data);
     }
 
+    const updated = await getStudents();
+    setStudents(updated);
+
     reset();
+    setEditingId(null);
     setIsModalOpen(false);
   }
 
@@ -101,64 +106,55 @@ export function Students() {
           setEditingId(null);
           reset();
         }}
-        className="bg-green-600 px-4 py-2 rounded w-fit"
+        className="w-fit rounded bg-green-600 px-4 py-2"
       >
         + Novo aluno
       </button>
 
       <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
-        <h2 className="text-xl font-bold mb-4">
+        <h2 className="mb-4 text-xl font-bold">
           {editingId ? "Editar aluno" : "Novo aluno"}
         </h2>
 
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="flex flex-col gap-3"
-        >
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
           <input
             {...register("name")}
             placeholder="Nome"
-            className="bg-gray-700 p-2 rounded text-white"
+            className="rounded bg-gray-700 p-2 text-white"
           />
           {errors.name && (
-            <span className="text-red-400 text-sm">
-              {errors.name.message}
-            </span>
+            <span className="text-sm text-red-400">{errors.name.message}</span>
           )}
 
           <input
             type="number"
             {...register("age", { valueAsNumber: true })}
             placeholder="Idade"
-            className="bg-gray-700 p-2 rounded text-white"
+            className="rounded bg-gray-700 p-2 text-white"
           />
           {errors.age && (
-            <span className="text-red-400 text-sm">
-              {errors.age.message}
-            </span>
+            <span className="text-sm text-red-400">{errors.age.message}</span>
           )}
 
           <input
             {...register("plan")}
             placeholder="Plano"
-            className="bg-gray-700 p-2 rounded text-white"
+            className="rounded bg-gray-700 p-2 text-white"
           />
           {errors.plan && (
-            <span className="text-red-400 text-sm">
-              {errors.plan.message}
-            </span>
+            <span className="text-sm text-red-400">{errors.plan.message}</span>
           )}
 
-          <button className="bg-blue-600 py-2 rounded mt-2">
+          <button className="mt-2 rounded bg-blue-600 py-2">
             {editingId ? "Atualizar" : "Cadastrar"}
           </button>
         </form>
       </Modal>
 
-      <div className="bg-gray-800 p-4 rounded-xl">
+      <div className="rounded-xl bg-gray-800 p-4">
         <table className="w-full text-left">
           <thead>
-            <tr className="text-gray-400 border-b border-gray-700">
+            <tr className="border-b border-gray-700 text-gray-400">
               <th className="py-2">Nome</th>
               <th>Idade</th>
               <th>Plano</th>
