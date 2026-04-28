@@ -6,16 +6,43 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { useEffect, useState } from "react";
 
-const data = [
-  { month: "Jan", alunos: 20 },
-  { month: "Fev", alunos: 35 },
-  { month: "Mar", alunos: 50 },
-  { month: "Abr", alunos: 65 },
-  { month: "Mai", alunos: 80 },
-];
+type StudentWorkout = {
+  name: string;
+  _count: {
+    workouts: number;
+  };
+};
+
+type DashboardResponse = {
+  workoutsPerStudent: StudentWorkout[];
+};
+
+type ChartData = {
+  month: string;
+  alunos: number;
+};
 
 export function StudentsChart() {
+  const [data, setData] = useState<ChartData[]>([]);
+
+  useEffect(() => {
+    async function load() {
+      const res = await fetch("http://localhost:3000/dashboard");
+      const json: DashboardResponse = await res.json();
+
+      const formatted = json.workoutsPerStudent.map((student) => ({
+        month: student.name,
+        alunos: student._count.workouts,
+      }));
+
+      setData(formatted);
+    }
+
+    load();
+  }, []);
+
   return (
     <div className="bg-gray-800 p-5 rounded-xl">
       <h2 className="text-lg mb-4">Crescimento de alunos</h2>
