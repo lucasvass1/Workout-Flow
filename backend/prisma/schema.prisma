@@ -4,11 +4,36 @@ generator client {
 
 datasource db {
   provider = "sqlite"
+url      = env("DATABASE_URL")
 }
 
 model Student {
-  id    Int    @id @default(autoincrement())
-  name  String
-  age   Int
-  plan  String
+  id       Int       @id @default(autoincrement())
+  name     String
+  age      Int
+  plan     String
+
+  workouts Workout[]
+}
+
+model Workout {
+  id        Int      @id @default(autoincrement())
+  name      String
+  date      DateTime @default(now())
+
+  studentId Int
+  student   Student  @relation(fields: [studentId], references: [id])
+
+  exercises Exercise[]
+}
+
+model Exercise {
+  id        Int    @id @default(autoincrement())
+  name      String
+  sets      Int
+  reps      Int
+  weight    Float
+
+  workoutId Int
+  workout   Workout @relation(fields: [workoutId], references: [id])
 }
