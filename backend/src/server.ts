@@ -150,3 +150,27 @@ app.delete("/workouts/:id", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
+
+app.get("/dashboard", async (req, res) => {
+  const totalStudents = await prisma.student.count();
+  const totalWorkouts = await prisma.workout.count();
+
+  const workoutsPerStudent = await prisma.student.findMany({
+    include: {
+      _count: {
+        select: { workouts: true },
+      },
+    },
+  });
+
+  res.json({
+    totalStudents,
+    totalWorkouts,
+    workoutsPerStudent,
+    newStudents: 0,
+    revenue: 0,
+    growth: 0,
+    positiveFeedback: 0,
+    negativeFeedback: 0,
+  });
+});
