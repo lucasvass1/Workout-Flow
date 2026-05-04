@@ -3,7 +3,7 @@
 Sistema de gestão de alunos para academias, com foco em performance, organização e experiência do usuário.
 
 🔗 **Acesse o projeto:**
-https://workout-flow-fj5g.vercel.app/
+workout-flow-fj5g-lucas-vasconcelos-s-projects.vercel.app
 
 ---
 
