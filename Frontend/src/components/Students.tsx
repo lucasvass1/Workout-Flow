@@ -7,6 +7,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useEffect, useState } from "react";
+import { BASE_URL } from "../services/api/config";
 
 type StudentWorkout = {
   name: string;
@@ -29,7 +30,7 @@ export function StudentsChart() {
 
   useEffect(() => {
     async function load() {
-      const res = await fetch("https://workout-flow.onrender.com/dashboard/workouts-per-student");
+      const res = await fetch(`${BASE_URL}/dashboard`);
       const json: DashboardResponse = await res.json();
 
       const formatted = json.workoutsPerStudent.map((student) => ({
