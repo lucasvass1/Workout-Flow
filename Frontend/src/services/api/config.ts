@@ -1,0 +1,1 @@
+export const BASE_URL = "https://workout-flow.onrender.com";
