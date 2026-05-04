@@ -29,7 +29,7 @@ export function StudentsChart() {
 
   useEffect(() => {
     async function load() {
-      const res = await fetch("http://localhost:3000/dashboard");
+      const res = await fetch("https://workout-flow.onrender.com/dashboard/workouts-per-student");
       const json: DashboardResponse = await res.json();
 
       const formatted = json.workoutsPerStudent.map((student) => ({
