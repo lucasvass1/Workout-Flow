@@ -24,7 +24,7 @@ export function Workouts() {
     async function fetchData() {
       const workoutsData = await getWorkouts();
 
-      const res = await fetch("http://localhost:3000/students");
+      const res = await fetch("https://workout-flow.onrender.com/students");
       const studentsData = await res.json();
 
       setWorkouts(workoutsData);

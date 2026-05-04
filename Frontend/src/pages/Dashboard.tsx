@@ -16,7 +16,7 @@ export function Dashboard() {
 
   useEffect(() => {
     async function fetchData() {
-      const res = await fetch("http://localhost:3000/dashboard");
+      const res = await fetch("https://workout-flow.onrender.com/dashboard");
       const json = await res.json();
       setData(json);
     }
