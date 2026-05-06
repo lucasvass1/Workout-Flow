@@ -1,22 +1,21 @@
-const API_URL = "https://workout-flow.onrender.com";
+import { apiFetch } from "./api";
 
-export async function getWorkouts() {
-  const res = await fetch(`${API_URL}/workouts`);
-  if (!res.ok) throw new Error("Erro ao buscar treinos");
-  return res.json();
-}
+const API_URL = "https://workout-flow.onrender.com";
 
 type CreateWorkoutData = {
   name: string;
   studentId: number;
 };
 
+export async function getWorkouts() {
+  const res = await apiFetch(`${API_URL}/workouts`);
+  if (!res.ok) throw new Error("Erro ao buscar treinos");
+  return res.json();
+}
+
 export async function createWorkout(data: CreateWorkoutData) {
-  const res = await fetch(`${API_URL}/workouts`, {
+  const res = await apiFetch(`${API_URL}/workouts`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
     body: JSON.stringify(data),
   });
 
@@ -25,7 +24,7 @@ export async function createWorkout(data: CreateWorkoutData) {
 }
 
 export async function deleteWorkout(id: number) {
-  const res = await fetch(`${API_URL}/workouts/${id}`, {
+  const res = await apiFetch(`${API_URL}/workouts/${id}`, {
     method: "DELETE",
   });
 

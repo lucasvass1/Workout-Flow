@@ -1,10 +1,25 @@
 import express from "express";
 import cors from "cors";
 import { prisma } from "./lib/prisma";
+import authRoutes from "./routes/auth";
+import { authenticateToken } from "./middleware/auth";
+
+declare global {
+    namespace Express {
+        interface Request {
+            userId?: number; // Adiciona a propriedade userId ao tipo Request
+        }
+    }
+}
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use("/auth", authRoutes);
+
+app.use("/students", authenticateToken);
+app.use("/workouts", authenticateToken);
+app.use("/dashboard", authenticateToken);
 
 const PORT = 3000;
 
@@ -16,9 +31,19 @@ function parseId(id: string) {
 
 app.get("/students", async (req, res) => {
   try {
-    const students = await prisma.student.findMany();
+    const userId = req.userId;
+
+    if (!userId) {
+      return res.status(401).json({ error: "Não autorizado" });
+    }
+
+    const students = await prisma.student.findMany({
+      where: { userId: Number(userId) },
+    });
+
     res.json(students);
-  } catch {
+  } catch (error) {
+    console.error(error);
     res.status(500).json({ error: "Erro ao buscar alunos" });
   }
 });
@@ -26,8 +51,9 @@ app.get("/students", async (req, res) => {
 app.post("/students", async (req, res) => {
   try {
     const { name, age, plan } = req.body;
+    const userId = req.userId;
 
-    if (!name || !age) {
+    if (!name || !age || !userId) {
       return res.status(400).json({ error: "Dados inválidos" });
     }
 
@@ -36,6 +62,9 @@ app.post("/students", async (req, res) => {
         name,
         age: Number(age),
         plan,
+        user: {
+          connect: { id: Number(userId) },
+        },
       },
     });
 
@@ -87,7 +116,7 @@ app.delete("/students/:id", async (req, res) => {
   }
 });
 
-app.get("/workouts", async (req, res) => {
+app.get("/workouts", async (_req, res) => {
   try {
     const workouts = await prisma.workout.findMany({
       include: {
@@ -105,14 +134,18 @@ app.get("/workouts", async (req, res) => {
 app.post("/workouts", async (req, res) => {
   try {
     const { name, studentId } = req.body;
+    const userId = req.userId;
 
-    if (!name || !studentId) {
+    if (!name || !studentId || !userId) {
       return res.status(400).json({ error: "Dados inválidos" });
     }
 
     const workout = await prisma.workout.create({
       data: {
         name,
+        user: {
+          connect: { id: Number(userId) },
+        },
         student: {
           connect: { id: Number(studentId) },
         },
@@ -151,7 +184,7 @@ app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
 
-app.get("/dashboard", async (req, res) => {
+app.get("/dashboard", async (_req, res) => {
   const totalStudents = await prisma.student.count();
   const totalWorkouts = await prisma.workout.count();
 
