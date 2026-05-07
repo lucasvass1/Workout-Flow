@@ -43,9 +43,9 @@ app.get("/students", async (req, res) => {
 
     res.json(students);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Erro ao buscar alunos" });
-  }
+  console.error("ERRO REAL:", error);
+  res.status(500).json({ error: "Erro ao buscar alunos" });
+}
 });
 
 app.post("/students", async (req, res) => {
@@ -69,9 +69,10 @@ app.post("/students", async (req, res) => {
     });
 
     res.status(201).json(student);
-  } catch {
-    res.status(500).json({ error: "Erro ao criar aluno" });
-  }
+  } catch (error) {
+  console.error("ERRO REAL CREATE STUDENT:", error);
+  res.status(500).json({ error: "Erro ao criar aluno" });
+}
 });
 
 app.put("/students/:id", async (req, res) => {
@@ -187,6 +188,7 @@ app.listen(PORT, () => {
 app.get("/dashboard", async (_req, res) => {
   const totalStudents = await prisma.student.count();
   const totalWorkouts = await prisma.workout.count();
+  
 
   const workoutsPerStudent = await prisma.student.findMany({
     include: {
@@ -195,6 +197,7 @@ app.get("/dashboard", async (_req, res) => {
       },
     },
   });
+  
 
   res.json({
     totalStudents,
@@ -206,4 +209,8 @@ app.get("/dashboard", async (_req, res) => {
     positiveFeedback: 0,
     negativeFeedback: 0,
   });
+});
+app.get("/debug-users", async (_req, res) => {
+  const users = await prisma.user.findMany();
+  res.json(users);
 });

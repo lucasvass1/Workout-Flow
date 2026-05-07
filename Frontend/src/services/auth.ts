@@ -1,6 +1,6 @@
 
 export async function login(email: string, password: string) {
-    const res = await fetch("http://workout-flow.onrender.com/auth/login", {
+    const res = await fetch("http://workout-flow.onrender.com/login", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

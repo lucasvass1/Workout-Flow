@@ -1,4 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
 import { type Student } from "../types/students";
 import {
   getStudents,
@@ -41,14 +42,28 @@ export function Students() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    //PROTEÇÃO DA PÁGINA
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
     async function loadStudents() {
-      const data = await getStudents();
-      setStudents(data);
+      try {
+        const data = await getStudents();
+        setStudents(data);
+      } catch (err) {
+        console.log("Erro ao buscar alunos:", err);
+      }
     }
 
     loadStudents();
-  }, []);
+  }, [navigate]);
 
   const {
     register,
@@ -61,25 +76,32 @@ export function Students() {
   });
 
   async function handleDelete(id: number) {
-    await deleteStudent(id);
-
-    const updated = await getStudents();
-    setStudents(updated);
+    try {
+      await deleteStudent(id);
+      const updated = await getStudents();
+      setStudents(updated);
+    } catch (err) {
+      console.log("Erro ao deletar aluno:", err);
+    }
   }
 
   async function onSubmit(data: StudentFormData) {
-    if (editingId !== null) {
-      await updateStudent(editingId, data);
-    } else {
-      await createStudent(data);
+    try {
+      if (editingId !== null) {
+        await updateStudent(editingId, data);
+      } else {
+        await createStudent(data);
+      }
+
+      const updated = await getStudents();
+      setStudents(updated);
+
+      reset();
+      setEditingId(null);
+      setIsModalOpen(false);
+    } catch (err) {
+      console.log("Erro ao salvar aluno:", err);
     }
-
-    const updated = await getStudents();
-    setStudents(updated);
-
-    reset();
-    setEditingId(null);
-    setIsModalOpen(false);
   }
 
   function handleEdit(student: Student) {
