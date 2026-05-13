@@ -1,19 +1,49 @@
-import { BrowserRouter , Routes , Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { MainLayout } from "./layouts/mainlayout";
 import { Dashboard } from "./pages/Dashboard";
 import { Students } from "./pages/Students";
 import { Workouts } from "./pages/Workouts";
+import { Login } from "./pages/Login";
+import { PrivateRoute } from "./routes/PrivateRoute";
 
 function App() {
   return (
     <BrowserRouter>
-      <MainLayout>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/students" element={<Students />} />
-          <Route path="/workouts" element={<Workouts />} />
-        </Routes>
-      </MainLayout>
+      <Routes>
+        {/* pública */}
+        <Route path="/login" element={<Login />} />
+
+        {/* rotas protegidas com layout */}
+        <Route element={<MainLayout />}>
+          
+          <Route
+            path="/dashboard"
+            element={
+              <PrivateRoute>
+                <Dashboard />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/students"
+            element={
+              <PrivateRoute>
+                <Students />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/workouts"
+            element={
+              <PrivateRoute>
+                <Workouts />
+              </PrivateRoute>
+            }
+          />
+        </Route>
+      </Routes>
     </BrowserRouter>
   );
 }
