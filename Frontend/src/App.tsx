@@ -5,14 +5,14 @@ import { Students } from "./pages/Students";
 import { Workouts } from "./pages/Workouts";
 import { Login } from "./pages/Login";
 import { PrivateRoute } from "./routes/PrivateRoute";
-
+import { Register } from "./pages/Register";
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         {/* pública */}
         <Route path="/login" element={<Login />} />
-
+        <Route path="/register" element={<Register />} />
         {/* rotas protegidas com layout */}
         <Route element={<MainLayout />}>
           

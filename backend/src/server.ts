@@ -3,6 +3,7 @@ import cors from "cors";
 import { prisma } from "./lib/prisma";
 import authRoutes from "./routes/auth";
 import { authenticateToken } from "./middleware/auth";
+import { register} from "./auth/register";
 
 declare global {
     namespace Express {
@@ -214,3 +215,5 @@ app.get("/debug-users", async (_req, res) => {
   const users = await prisma.user.findMany();
   res.json(users);
 });
+
+app.post("/register", register);

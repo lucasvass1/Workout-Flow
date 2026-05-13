@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { Link } from "react-router-dom";
+import { ButtonEntrar } from "../components/ButtonEntrar";
 export function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -13,7 +14,7 @@ export function Login() {
       setLoading(true);
       setError("");
 
-      const res = await fetch("http://workot-flow.onrender.com/auth/login", {
+      const res = await fetch("https://workout-flow.onrender.com/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -29,7 +30,7 @@ export function Login() {
       localStorage.setItem("token", data.token);
 
       navigate("/dashboard");
-    } catch (any) {
+    } catch (err: any) {
       setError(err.message || "Erro ao fazer login");
     } finally {
       setLoading(false);
@@ -74,13 +75,16 @@ export function Login() {
             />
           </div>
 
-          <button
-            onClick={handleLogin}
-            disabled={loading}
-            className="mt-2 w-full rounded-lg bg-blue-600 py-3 font-medium text-white transition hover:bg-blue-500 active:scale-[0.99] disabled:opacity-50"
-          >
-            {loading ? "Entrando..." : "Entrar"}
-          </button>
+        <ButtonEntrar onClick={handleLogin} loading={loading} />
+          <p className="text-gray-400 mt-4 text-center">
+  Não possui conta?{" "}
+  <Link
+    to="/register"
+    className="text-blue-500 hover:underline"
+  >
+    Criar conta
+  </Link>
+</p>
         </div>
 
         {/* FOOTER */}
