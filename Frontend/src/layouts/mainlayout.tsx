@@ -1,15 +1,20 @@
 import { Outlet } from "react-router-dom";
 import { Link, useLocation } from "react-router-dom";
 import { LayoutDashboard, Users, Dumbbell } from "lucide-react";
-
+import { useNavigate } from "react-router-dom";
 export function MainLayout() {
   const location = useLocation();
+  const navigate = useNavigate();
+  function handleLogout() {
+  localStorage.removeItem("token");
+  navigate("/login");
+}
 
-  const menu = [
-    { name: "Dashboard", path: "/", icon: LayoutDashboard },
-    { name: "Alunos", path: "/students", icon: Users },
-    { name: "Treinos", path: "/workouts", icon: Dumbbell },
-  ];
+const menu = [
+  { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
+  { name: "Alunos", path: "/students", icon: Users },
+  { name: "Treinos", path: "/workouts", icon: Dumbbell },
+];
 
   return (
     <div className="flex min-h-screen bg-gray-900 text-white">
@@ -35,6 +40,31 @@ export function MainLayout() {
             );
           })}
         </nav>
+      <button
+  onClick={handleLogout}
+  className="
+    w-full
+    mt-6
+    px-4
+    py-3
+    rounded-xl
+    bg-gradient-to-r
+    from-red-500
+    to-red-700
+    hover:from-red-600
+    hover:to-red-800
+    text-white
+    font-semibold
+    shadow-lg
+    hover:shadow-red-500/30
+    transition-all
+    duration-300
+    hover:scale-[1.02]
+    active:scale-[0.98]
+  "
+>
+  Sair da conta
+</button>
       </aside>
 
       <div className="flex-1 flex flex-col">
