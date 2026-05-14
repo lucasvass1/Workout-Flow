@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { getWorkouts, createWorkout, deleteWorkout } from "../services/workouts";
+import {
+  getWorkouts,
+  createWorkout,
+  deleteWorkout,
+} from "../services/workouts";
+
+import { BASE_URL } from "../services/api/config";
 
 type Workout = {
   id: number;
@@ -22,41 +28,71 @@ export function Workouts() {
 
   useEffect(() => {
     async function fetchData() {
-      const workoutsData = await getWorkouts();
+      try {
+        const token = localStorage.getItem("token");
 
-      const res = await fetch("https://workout-flow.onrender.com/students");
-      const studentsData = await res.json();
+        const workoutsData = await getWorkouts();
 
-      setWorkouts(workoutsData);
-      setStudents(studentsData);
+        const res = await fetch(`${BASE_URL}/students`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!res.ok) {
+          throw new Error("Erro ao buscar alunos");
+        }
+
+        const studentsData = await res.json();
+
+        setWorkouts(Array.isArray(workoutsData) ? workoutsData : []);
+        setStudents(Array.isArray(studentsData) ? studentsData : []);
+      } catch (error) {
+        console.error(error);
+        setStudents([]);
+        setWorkouts([]);
+      }
     }
 
     fetchData();
   }, []);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(
+    e: React.FormEvent<HTMLFormElement>
+  ) {
     e.preventDefault();
 
-    await createWorkout({
-      name,
-      studentId: Number(studentId),
-    });
+    try {
+      await createWorkout({
+        name,
+        studentId: Number(studentId),
+      });
 
-    setName("");
-    setStudentId("");
+      setName("");
+      setStudentId("");
 
-    const data = await getWorkouts();
-    setWorkouts(data);
+      const data = await getWorkouts();
+
+      setWorkouts(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   async function handleDelete(id: number) {
-    await deleteWorkout(id);
-    const data = await getWorkouts();
-    setWorkouts(data);
+    try {
+      await deleteWorkout(id);
+
+      const data = await getWorkouts();
+
+      setWorkouts(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 min-w-0">
       <h1 className="text-2xl font-bold">Treinos</h1>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -73,6 +109,7 @@ export function Workouts() {
           className="bg-gray-700 p-2 rounded"
         >
           <option value="">Selecione um aluno</option>
+
           {students.map((s) => (
             <option key={s.id} value={s.id}>
               {s.name}
@@ -80,17 +117,24 @@ export function Workouts() {
           ))}
         </select>
 
-        <button type="submit" className="bg-blue-500 p-2 rounded">
+        <button
+          type="submit"
+          className="bg-blue-500 p-2 rounded"
+        >
           Criar Treino
         </button>
       </form>
 
       <div className="bg-gray-800 p-4 rounded-xl">
         {workouts.map((w) => (
-          <div key={w.id} className="flex justify-between border-b py-2">
+          <div
+            key={w.id}
+            className="flex justify-between border-b py-2"
+          >
             <span>
               {w.name} - {w.student.name}
             </span>
+
             <button
               onClick={() => handleDelete(w.id)}
               className="bg-red-500 p-1 rounded"

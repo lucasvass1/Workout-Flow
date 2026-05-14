@@ -1,9 +1,8 @@
-import { Prisma } from "@prisma/client";
+import { prisma } from  "../lib/prisma";
 import { PrismaClient } from "@prisma/client/extension";
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 
-const prisma = new PrismaClient();
 
 export async function register(req: Request, res: Response) {
     try {

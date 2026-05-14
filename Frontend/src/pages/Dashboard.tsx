@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Card } from "../components/Card";
-import { StudentsChart } from "../components/Students";
+import { StudentsChart } from "../components/StudentsChart";
 
 type DashboardData = {
   totalStudents: number;
@@ -14,15 +14,35 @@ type DashboardData = {
 export function Dashboard() {
   const [data, setData] = useState<DashboardData | null>(null);
 
-  useEffect(() => {
-    async function fetchData() {
-      const res = await fetch("https://workout-flow.onrender.com/dashboard");
-      const json = await res.json();
-      setData(json);
-    }
+ useEffect(() => {
+  async function fetchData() {
+    try {
+      const token = localStorage.getItem("token");
 
-    fetchData();
-  }, []);
+      const res = await fetch(
+        "https://workout-flow.onrender.com/dashboard",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!res.ok) {
+        throw new Error("Erro ao buscar dashboard");
+      }
+
+      const json = await res.json();
+
+      setData(json);
+
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  fetchData();
+}, []);
 
   if (!data) {
     return <div>Carregando...</div>;

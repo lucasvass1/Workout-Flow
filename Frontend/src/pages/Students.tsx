@@ -1,15 +1,19 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { type Student } from "../types/students";
+
 import {
   getStudents,
   createStudent,
   updateStudent,
   deleteStudent,
 } from "../services/api.ts";
+
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+
 import { studentSchema } from "../Schemas/StudentsSchema";
+
 import type { StudentFormData } from "../Schemas/StudentsSchema";
 
 type ModalProps = {
@@ -31,6 +35,7 @@ function Modal({ isOpen, onClose, children }: ModalProps) {
         >
           ✕
         </button>
+
         {children}
       </div>
     </div>
@@ -47,7 +52,7 @@ export function Students() {
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    //PROTEÇÃO DA PÁGINA
+    // proteção da rota
     if (!token) {
       navigate("/login");
       return;
@@ -56,9 +61,15 @@ export function Students() {
     async function loadStudents() {
       try {
         const data = await getStudents();
-        setStudents(data);
+
+        if (Array.isArray(data)) {
+          setStudents(data);
+        } else {
+          setStudents([]);
+        }
       } catch (err) {
         console.log("Erro ao buscar alunos:", err);
+        setStudents([]);
       }
     }
 
@@ -78,8 +89,12 @@ export function Students() {
   async function handleDelete(id: number) {
     try {
       await deleteStudent(id);
+
       const updated = await getStudents();
-      setStudents(updated);
+
+      if (Array.isArray(updated)) {
+        setStudents(updated);
+      }
     } catch (err) {
       console.log("Erro ao deletar aluno:", err);
     }
@@ -94,7 +109,10 @@ export function Students() {
       }
 
       const updated = await getStudents();
-      setStudents(updated);
+
+      if (Array.isArray(updated)) {
+        setStudents(updated);
+      }
 
       reset();
       setEditingId(null);
@@ -106,7 +124,9 @@ export function Students() {
 
   function handleEdit(student: Student) {
     setEditingId(student.id);
+
     setIsModalOpen(true);
+
     setValue("name", student.name);
     setValue("age", student.age);
     setValue("plan", student.plan);
@@ -138,14 +158,20 @@ export function Students() {
           {editingId ? "Editar aluno" : "Novo aluno"}
         </h2>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex flex-col gap-3"
+        >
           <input
             {...register("name")}
             placeholder="Nome"
             className="rounded bg-gray-700 p-2 text-white"
           />
+
           {errors.name && (
-            <span className="text-sm text-red-400">{errors.name.message}</span>
+            <span className="text-sm text-red-400">
+              {errors.name.message}
+            </span>
           )}
 
           <input
@@ -154,8 +180,11 @@ export function Students() {
             placeholder="Idade"
             className="rounded bg-gray-700 p-2 text-white"
           />
+
           {errors.age && (
-            <span className="text-sm text-red-400">{errors.age.message}</span>
+            <span className="text-sm text-red-400">
+              {errors.age.message}
+            </span>
           )}
 
           <input
@@ -163,8 +192,11 @@ export function Students() {
             placeholder="Plano"
             className="rounded bg-gray-700 p-2 text-white"
           />
+
           {errors.plan && (
-            <span className="text-sm text-red-400">{errors.plan.message}</span>
+            <span className="text-sm text-red-400">
+              {errors.plan.message}
+            </span>
           )}
 
           <button className="mt-2 rounded bg-blue-600 py-2">
@@ -185,28 +217,42 @@ export function Students() {
           </thead>
 
           <tbody>
-            {students.map((student) => (
-              <tr key={student.id} className="border-b border-gray-700">
-                <td className="py-2">{student.name}</td>
-                <td>{student.age}</td>
-                <td>{student.plan}</td>
-                <td className="flex gap-2">
-                  <button
-                    onClick={() => handleEdit(student)}
-                    className="text-blue-400 hover:text-blue-600"
-                  >
-                    Editar
-                  </button>
+            {students?.length > 0 ? (
+              students.map((student) => (
+                <tr
+                  key={student.id}
+                  className="border-b border-gray-700"
+                >
+                  <td className="py-2">{student.name}</td>
 
-                  <button
-                    onClick={() => handleDelete(student.id)}
-                    className="text-red-400 hover:text-red-600"
-                  >
-                    Deletar
-                  </button>
+                  <td>{student.age}</td>
+
+                  <td>{student.plan}</td>
+
+                  <td className="flex gap-2">
+                    <button
+                      onClick={() => handleEdit(student)}
+                      className="text-blue-400 hover:text-blue-600"
+                    >
+                      Editar
+                    </button>
+
+                    <button
+                      onClick={() => handleDelete(student.id)}
+                      className="text-red-400 hover:text-red-600"
+                    >
+                      Deletar
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={4} className="py-4 text-center text-gray-400">
+                  Nenhum aluno encontrado
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
