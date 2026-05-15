@@ -19,9 +19,23 @@ export function getToken() {
   return localStorage.getItem("token");
 }
 
-export async function getStudents() {
-  const res = await apiFetch(`${API_URL}/students`);
-  if (!res.ok) throw new Error("Erro ao buscar alunos");
+export async function getStudents(
+  page = 1,
+  search = ""
+) {
+  const params = new URLSearchParams({
+    page: String(page),
+    search,
+  });
+
+  const res = await apiFetch(
+    `${API_URL}/students?${params.toString()}`
+  );
+
+  if (!res.ok) {
+    throw new Error("Erro ao buscar alunos");
+  }
+
   return res.json();
 }
 

@@ -47,23 +47,25 @@ export function Students() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+
   const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    // proteção da rota
     if (!token) {
       navigate("/login");
       return;
     }
 
-    async function loadStudents() {
+    async function fetchStudents() {
       try {
-        const data = await getStudents();
+        const data = await getStudents(page, search);
 
-        if (Array.isArray(data)) {
-          setStudents(data);
+        if (Array.isArray(data.students)) {
+          setStudents(data.students);
         } else {
           setStudents([]);
         }
@@ -73,8 +75,8 @@ export function Students() {
       }
     }
 
-    loadStudents();
-  }, [navigate]);
+    fetchStudents();
+  }, [navigate, page, search]);
 
   const {
     register,
@@ -90,10 +92,10 @@ export function Students() {
     try {
       await deleteStudent(id);
 
-      const updated = await getStudents();
+      const updated = await getStudents(page, search);
 
-      if (Array.isArray(updated)) {
-        setStudents(updated);
+      if (Array.isArray(updated.students)) {
+        setStudents(updated.students);
       }
     } catch (err) {
       console.log("Erro ao deletar aluno:", err);
@@ -108,10 +110,10 @@ export function Students() {
         await createStudent(data);
       }
 
-      const updated = await getStudents();
+      const updated = await getStudents(page, search);
 
-      if (Array.isArray(updated)) {
-        setStudents(updated);
+      if (Array.isArray(updated.students)) {
+        setStudents(updated.students);
       }
 
       reset();
@@ -141,6 +143,17 @@ export function Students() {
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-3xl font-bold">Alunos</h1>
+
+      <input
+        type="text"
+        placeholder="Buscar aluno..."
+        value={search}
+        onChange={(e) => {
+          setSearch(e.target.value);
+          setPage(1);
+        }}
+        className="rounded bg-gray-800 p-2 text-white"
+      />
 
       <button
         onClick={() => {
@@ -217,7 +230,7 @@ export function Students() {
           </thead>
 
           <tbody>
-            {students?.length > 0 ? (
+            {students.length > 0 ? (
               students.map((student) => (
                 <tr
                   key={student.id}
@@ -248,13 +261,35 @@ export function Students() {
               ))
             ) : (
               <tr>
-                <td colSpan={4} className="py-4 text-center text-gray-400">
+                <td
+                  colSpan={4}
+                  className="py-4 text-center text-gray-400"
+                >
                   Nenhum aluno encontrado
                 </td>
               </tr>
             )}
           </tbody>
         </table>
+      </div>
+
+      <div className="flex items-center justify-center alie gap-3">
+        <button
+          disabled={page === 1}
+          onClick={() => setPage(page - 1)}
+          className="rounded bg-gray-700 px-4 py-2 disabled:opacity-50"
+        >
+          Anterior
+        </button>
+
+        <span>Página {page}</span>
+
+        <button
+          onClick={() => setPage(page + 1)}
+          className="rounded bg-gray-700 px-4 py-2"
+        >
+          Próxima
+        </button>
       </div>
     </div>
   );

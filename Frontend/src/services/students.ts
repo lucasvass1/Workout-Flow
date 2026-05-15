@@ -2,9 +2,14 @@ import { apiFetch } from "./api";
 
 type StudentPayload = Record<string, unknown>;
 
-export async function getStudents() {
-  const res = await apiFetch("https://workout-flow.onrender.com/students");
-  if (!res.ok) throw new Error("Erro ao buscar alunos");
+export async function getStudents(
+  page = 1,
+  search = ""
+) {
+  const res = await apiFetch(
+    `https://workout-flow.onrender.com/students?page=${page}&search=${search}`
+  );
+
   return res.json();
 }
 

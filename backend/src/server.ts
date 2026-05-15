@@ -8,7 +8,7 @@ import { register} from "./auth/register";
 declare global {
     namespace Express {
         interface Request {
-            userId?: number; // Adiciona a propriedade userId ao tipo Request
+            userId?: number; 
         }
     }
 }
@@ -30,23 +30,56 @@ function parseId(id: string) {
   return parsed;
 }
 
-app.get("/students", async (req, res) => {
+app.get("/students", authenticateToken, async (req, res) => {
   try {
     const userId = req.userId;
 
-    if (!userId) {
-      return res.status(401).json({ error: "Não autorizado" });
-    }
+    const page = Number(req.query.page) || 1;
+    const limit = 10;
+
+    const search = String(req.query.search || "");
+
+    const skip = (page - 1) * limit;
 
     const students = await prisma.student.findMany({
-      where: { userId: Number(userId) },
+      where: {
+        userId: Number(userId),
+        name: {
+          contains: search,
+        },
+      },
+
+      skip,
+      take: limit,
+
+      orderBy: {
+        id: "desc",
+      },
     });
 
-    res.json(students);
+    const total = await prisma.student.count({
+      where: {
+        userId: Number(userId),
+        name: {
+          contains: search,
+        },
+      },
+    });
+
+    res.json({
+      students,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    });
+
   } catch (error) {
-  console.error("ERRO REAL:", error);
-  res.status(500).json({ error: "Erro ao buscar alunos" });
-}
+    console.error("ERRO REAL:", error);
+
+    res.status(500).json({
+      error: "Erro ao buscar alunos",
+    });
+  }
 });
 
 app.post("/students", async (req, res) => {
