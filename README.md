@@ -1,123 +1,271 @@
 # 🏋️‍♂️ WorkoutFlow
 
-Sistema de gestão de alunos para academias, com foco em performance, organização e experiência do usuário.
+Sistema completo de gestão de alunos e treinos para academias, desenvolvido com foco em performance, organização e experiência do usuário.
 
-🔗 **Acesse o projeto:**
+🔗 **Acesse o projeto:**  
 https://workout-flow-fj5g-lucas-vasconcelos-s-projects.vercel.app/
 
 ---
 
-## 🚀 Funcionalidades
+# ✨ Funcionalidades
 
-### 📊 Dashboard
+## 🔐 Autenticação de usuários
 
-* Visão geral do sistema
-* Cards com métricas
-* Gráfico de crescimento de alunos
-
-### 👥 Gestão de Alunos (CRUD completo)
-
-* ➕ Criar aluno
-* ✏️ Editar aluno
-* 🗑️ Deletar aluno
-* 📋 Listagem dinâmica
-
-### 💎 UX e Interface
-
-* Modal para criação/edição
-* Validação de formulário com feedback em tempo real
-* Toasts de sucesso/erro
-* Layout estilo SaaS (sidebar + dashboard)
+- Cadastro de usuários
+- Login com JWT
+- Rotas protegidas
+- Middleware de autenticação
+- Isolamento de dados por usuário
 
 ---
 
-## 🛠️ Tecnologias utilizadas
+## 📊 Dashboard
+
+- Visão geral do sistema
+- Total de alunos
+- Total de treinos
+- Métricas por aluno
+- Estrutura preparada para gráficos e analytics
+
+---
+
+## 👥 Gestão de alunos (CRUD completo)
+
+- ➕ Criar aluno
+- ✏️ Editar aluno
+- 🗑️ Deletar aluno
+- 📋 Listagem paginada
+- 🔎 Busca dinâmica
+
+---
+
+## 💪 Gestão de treinos
+
+- ➕ Criar treino
+- 🗑️ Remover treino
+- 📋 Listagem de treinos
+- Associação entre aluno e treino
+
+---
+
+## 🎨 UX e Interface
+
+- Layout estilo SaaS
+- Sidebar responsiva
+- Dashboard moderno
+- Modais para criação/edição
+- Feedback visual em tempo real
+- Toasts de sucesso e erro
+- Formulários validados
+
+---
+
+# 🛠️ Tecnologias utilizadas
+
+## Frontend
+
+- React
+- TypeScript
+- TailwindCSS
+- React Router DOM
+
+---
+
+## Backend
+
+- Node.js
+- Express
+- Prisma ORM
+- PostgreSQL
+- JWT Authentication
+- Multer
+
+---
+
+## Bibliotecas
+
+- React Hook Form
+- Zod
+- Recharts
+- React Hot Toast
+- Lucide React
+
+---
+
+# 🐳 Docker
+
+O projeto possui configuração Docker para facilitar:
+
+- Ambiente de desenvolvimento
+- Padronização do ambiente
+- Deploy
+- Integração com banco de dados
+
+## Tecnologias containerizadas
+
+- Frontend React
+- Backend Node.js
+- PostgreSQL
+
+---
+
+# 🧱 Arquitetura do projeto
+
+## Frontend
+
+```bash
+src/
+ ├── components/
+ ├── layouts/
+ ├── pages/
+ ├── schemas/
+ ├── services/
+ ├── types/
+ └── routes/
+```
+
+---
+
+## Backend
+
+```bash
+server/
+ ├── middleware/
+ ├── routes/
+ ├── auth/
+ ├── config/
+ ├── lib/
+ └── prisma/
+```
+
+---
+
+# 🔐 Segurança implementada
+
+- Autenticação JWT
+- Proteção de rotas
+- Validação de ownership por usuário
+- Isolamento de dados multiusuário
+- Validação de formulários
+- Tratamento de erros
+- Upload seguro de imagens
+
+---
+
+# 🧠 Conceitos aplicados
+
+- CRUD completo
+- API REST
+- Arquitetura modular
+- Componentização
+- Middleware de autenticação
+- Upload de arquivos
+- Relacionamentos com Prisma
+- Paginação
+- Busca dinâmica
+- Validação com Zod
+- Gerenciamento de estado com Hooks
+- UI/UX moderna inspirada em SaaS
+
+---
+
+# 🌐 Deploy
+
+## Frontend
+
+Hospedado na Vercel.
+
+## Backend
+
+API Node.js integrada ao PostgreSQL utilizando Prisma ORM.
+
+---
+
+# 🚀 Como executar o projeto
+
+## Clone o repositório
+
+```bash
+git clone <URL_DO_REPOSITORIO>
+```
+
+---
+
+## Instale as dependências
 
 ### Frontend
 
-* React
-* TypeScript
-* TailwindCSS
-
-### Bibliotecas
-
-* React Hook Form
-* Zod
-* React Router DOM
-* Recharts
-* React Hot Toast
-* Lucide Icons
-
----
-
-## 📂 Estrutura do projeto
-
+```bash
+npm install
 ```
-src/
- ├── components/
- │   ├── Card.tsx
- │   ├── Modal.tsx
- │   └── StudentsChart.tsx
- │
- ├── pages/
- │   ├── Dashboard.tsx
- │   ├── Students.tsx
- │   └── Workouts.tsx
- │
- ├── schemas/
- │   └── studentSchema.ts
- │
- ├── services/
- │   └── students.ts
- │
- ├── types/
- │   └── student.ts
- │
- └── layouts/
-     └── MainLayout.tsx
+
+### Backend
+
+```bash
+npm install
 ```
 
 ---
 
-## 🧠 Conceitos aplicados
+## Configure as variáveis de ambiente
 
-* Componentização
-* Gerenciamento de estado com React Hooks
-* Formulários profissionais com validação (React Hook Form + Zod)
-* CRUD completo no frontend
-* UI/UX moderna inspirada em SaaS
-* Separação de responsabilidades (schemas, types, services)
+Crie um arquivo `.env` no backend:
 
----
-
-## 🌐 Deploy
-
-O projeto está hospedado na plataforma Vercel.
+```env
+DATABASE_URL=
+JWT_SECRET=
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+```
 
 ---
 
-## 📈 Próximos passos
+## Execute com Docker
 
-* Integração com backend (Node.js + Prisma)
-* Autenticação de usuários
-* Módulo de treinos completo
-* Persistência de dados em banco
-
----
-
-## 💼 Sobre o projeto
-
-Este projeto foi desenvolvido com foco em prática profissional de frontend, simulando um sistema real de gestão.
+```bash
+docker-compose up
+```
 
 ---
 
-## 👨‍💻 Autor
+## Execute localmente
 
-Desenvolvido por Lucas Vasconcelos
+### Frontend
+
+```bash
+npm run dev
+```
+
+### Backend
+
+```bash
+npm run dev
+```
+
+---
+
+# 💼 Sobre o projeto
+
+O WorkoutFlow foi desenvolvido como um projeto fullstack com arquitetura moderna, simulando um sistema real de gestão para academias.
+
+O objetivo principal foi aplicar boas práticas de desenvolvimento frontend e backend, incluindo autenticação, segurança, organização de código e experiência do usuário.
+
+---
+
+# 👨‍💻 Autor
+
+Desenvolvido por Lucas Vasconcelos  
 📍 Brasil
 
 ---
 
-## ⭐ Se gostou do projeto
+# ⭐ Feedback
 
-Deixe uma estrela no repositório e compartilhe!
+Se gostou do projeto:
+
+- Deixe uma estrela no repositório
+- Compartilhe o projeto
+- Envie sugestões e feedbacks
+
+---
