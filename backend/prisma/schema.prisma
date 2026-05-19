@@ -12,6 +12,7 @@ model Student {
   name    String
   age     Int
   plan    String?
+  
  
 
   userId  Int
