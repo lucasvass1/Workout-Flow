@@ -219,30 +219,59 @@ app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
 
-app.get("/dashboard", async (_req, res) => {
-  const totalStudents = await prisma.student.count();
-  const totalWorkouts = await prisma.workout.count();
-  
+app.get("/dashboard", async (req, res) => {
+  try {
+    const userId = req.userId;
 
-  const workoutsPerStudent = await prisma.student.findMany({
-    include: {
-      _count: {
-        select: { workouts: true },
+    const totalStudents = await prisma.student.count({
+      where: {
+        userId: Number(userId),
       },
-    },
-  });
-  
+    });
 
-  res.json({
-    totalStudents,
-    totalWorkouts,
-    workoutsPerStudent,
-    newStudents: 0,
-    revenue: 0,
-    growth: 0,
-    positiveFeedback: 0,
-    negativeFeedback: 0,
-  });
+    const totalWorkouts = await prisma.workout.count({
+      where: {
+        userId: Number(userId),
+      },
+    });
+
+    const workoutsPerStudent =
+      await prisma.student.findMany({
+        where: {
+          userId: Number(userId),
+        },
+
+        include: {
+          _count: {
+            select: {
+              workouts: true,
+            },
+          },
+        },
+      });
+
+    res.json({
+      totalStudents,
+      totalWorkouts,
+      workoutsPerStudent,
+
+      newStudents: 0,
+      revenue: 0,
+      growth: 0,
+      positiveFeedback: 0,
+      negativeFeedback: 0,
+    });
+
+  } catch (error) {
+    console.error(
+      "ERRO DASHBOARD:",
+      error
+    );
+
+    res.status(500).json({
+      error: "Erro dashboard",
+    });
+  }
 });
 app.get("/debug-users", async (_req, res) => {
   const users = await prisma.user.findMany();
