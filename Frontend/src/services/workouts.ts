@@ -14,12 +14,20 @@ export async function getWorkouts() {
 }
 
 export async function createWorkout(data: CreateWorkoutData) {
+  console.log("DADOS ENVIADOS:", data);
+
   const res = await apiFetch(`${API_URL}/workouts`, {
     method: "POST",
     body: JSON.stringify(data),
   });
 
-  if (!res.ok) throw new Error("Erro ao criar treino");
+  if (!res.ok) {
+    const errorData = await res.json();
+    console.error("ERRO BACKEND:", errorData);
+
+    throw new Error(errorData.message || "Erro ao criar treino");
+  }
+
   return res.json();
 }
 

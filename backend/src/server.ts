@@ -168,11 +168,25 @@ app.get("/workouts", async (_req, res) => {
 
 app.post("/workouts", async (req, res) => {
   try {
+    console.log("BODY RECEBIDO:", req.body);
+    console.log("USER ID:", req.userId);
+
     const { name, studentId } = req.body;
     const userId = req.userId;
 
+    console.log("NAME:", name);
+    console.log("STUDENT ID:", studentId);
+    console.log("USER ID FINAL:", userId);
+
     if (!name || !studentId || !userId) {
-      return res.status(400).json({ error: "Dados inválidos" });
+      return res.status(400).json({
+        error: "Dados inválidos",
+        received: {
+          name,
+          studentId,
+          userId,
+        },
+      });
     }
 
     const workout = await prisma.workout.create({
@@ -188,12 +202,19 @@ app.post("/workouts", async (req, res) => {
     });
 
     res.status(201).json(workout);
+
   } catch (error: any) {
+    console.error("ERRO REAL:", error);
+
     if (error.code === "P2003") {
-      return res.status(400).json({ error: "Aluno não existe" });
+      return res.status(400).json({
+        error: "Aluno não existe",
+      });
     }
 
-    res.status(500).json({ error: "Erro ao criar treino" });
+    res.status(500).json({
+      error: "Erro ao criar treino",
+    });
   }
 });
 

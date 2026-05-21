@@ -45,8 +45,19 @@ export function Workouts() {
 
         const studentsData = await res.json();
 
-        setWorkouts(Array.isArray(workoutsData) ? workoutsData : []);
-        setStudents(Array.isArray(studentsData) ? studentsData : []);
+        setWorkouts(
+          Array.isArray(workoutsData)
+            ? workoutsData
+            : []
+        );
+
+        // CORREÇÃO AQUI
+        setStudents(
+          Array.isArray(studentsData.students)
+            ? studentsData.students
+            : []
+        );
+
       } catch (error) {
         console.error(error);
         setStudents([]);
@@ -62,6 +73,12 @@ export function Workouts() {
   ) {
     e.preventDefault();
 
+    // VALIDAÇÃO
+    if (!studentId) {
+      alert("Selecione um aluno");
+      return;
+    }
+
     try {
       await createWorkout({
         name,
@@ -73,7 +90,12 @@ export function Workouts() {
 
       const data = await getWorkouts();
 
-      setWorkouts(Array.isArray(data) ? data : []);
+      setWorkouts(
+        Array.isArray(data)
+          ? data
+          : []
+      );
+
     } catch (error) {
       console.error(error);
     }
@@ -85,7 +107,12 @@ export function Workouts() {
 
       const data = await getWorkouts();
 
-      setWorkouts(Array.isArray(data) ? data : []);
+      setWorkouts(
+        Array.isArray(data)
+          ? data
+          : []
+      );
+
     } catch (error) {
       console.error(error);
     }
@@ -93,25 +120,39 @@ export function Workouts() {
 
   return (
     <div className="flex flex-col gap-6 min-w-0">
-      <h1 className="text-2xl font-bold">Treinos</h1>
+      <h1 className="text-2xl font-bold">
+        Treinos
+      </h1>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col gap-4"
+      >
         <input
           placeholder="Nome do treino"
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e) =>
+            setName(e.target.value)
+          }
           className="bg-gray-700 p-2 rounded"
         />
 
         <select
           value={studentId}
-          onChange={(e) => setStudentId(e.target.value)}
+          onChange={(e) =>
+            setStudentId(e.target.value)
+          }
           className="bg-gray-700 p-2 rounded"
         >
-          <option value="">Selecione um aluno</option>
+          <option value="">
+            Selecione um aluno
+          </option>
 
           {students.map((s) => (
-            <option key={s.id} value={s.id}>
+            <option
+              key={s.id}
+              value={s.id}
+            >
               {s.name}
             </option>
           ))}
@@ -136,7 +177,9 @@ export function Workouts() {
             </span>
 
             <button
-              onClick={() => handleDelete(w.id)}
+              onClick={() =>
+                handleDelete(w.id)
+              }
               className="bg-red-500 p-1 rounded"
             >
               Deletar
