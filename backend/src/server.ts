@@ -427,21 +427,21 @@ app.post(
       }
 
       const exercise =
-        await prisma.exercise.create({
-          data: {
-            name,
+  await prisma.exercise.create({
+    data: {
+      name,
 
-            sets: Number(sets),
+      sets: Number(sets),
 
-            reps: Number(reps),
+      reps: Number(reps),
 
-            weight: load
-              ? Number(load)
-              : undefined,
+      weight: load
+        ? Number(load)
+        : 0,
 
-            workout: {
-              connect: {
-                id: workoutId,
+      workout: {
+        connect: {
+          id: workoutId,
               },
             },
           },
@@ -507,22 +507,22 @@ app.put(
         load,
       } = req.body;
 
-      const exercise =
-        await prisma.exercise.update({
-          where: {
-            id,
-          },
+     const exercise =
+  await prisma.exercise.update({
+    where: {
+      id,
+    },
 
-          data: {
-            name,
+    data: {
+      name,
 
-            sets: Number(sets),
+      sets: Number(sets),
 
-            reps: Number(reps),
+      reps: Number(reps),
 
-            weight: load
-              ? Number(load)
-              : undefined,
+      weight: load
+        ? Number(load)
+        : 0,
           },
         });
 
