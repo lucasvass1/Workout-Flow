@@ -44,7 +44,8 @@ https://workout-flow-fj5g-lucas-vasconcelos-s-projects.vercel.app/
 - ➕ Criar treino
 - 🗑️ Remover treino
 - 📋 Listagem de treinos
-- Associação entre aluno e treino
+- 🏋️ Gestão de exercícios por treino
+- 🔗 Relacionamento entre alunos, treinos e exercícios
 
 ---
 
