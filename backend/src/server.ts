@@ -300,3 +300,154 @@ app.get("/debug-users", async (_req, res) => {
 });
 
 app.post("/register", register);
+
+app.post(
+  "/workouts/:id/exercises",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const workoutId = Number(req.params.id);
+
+      const {
+        name,
+        sets,
+        reps,
+        load,
+      } = req.body;
+
+      if (
+        !name ||
+        !sets ||
+        !reps
+      ) {
+        return res.status(400).json({
+          error: "Dados inválidos",
+        });
+      }
+
+      const exercise =
+        await prisma.exercise.create({
+          data: {
+            name,
+            sets: Number(sets),
+            reps: Number(reps),
+            weight: load
+              ? Number(load)
+              : null,
+
+            workout: {
+              connect: {
+                id: workoutId,
+              },
+            },
+          },
+        });
+
+      res.status(201).json(exercise);
+
+    } catch (error) {
+      console.error(error);
+
+      res.status(500).json({
+        error: "Erro ao criar exercício",
+      });
+    }
+  }
+);
+
+app.get(
+  "/workouts/:id/exercises",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const workoutId = Number(req.params.id);
+
+      const exercises =
+        await prisma.exercise.findMany({
+          where: {
+            workoutId,
+          },
+
+          orderBy: {
+            id: "desc",
+          },
+        });
+
+      res.json(exercises);
+
+    } catch (error) {
+      console.error(error);
+
+      res.status(500).json({
+        error: "Erro ao buscar exercícios",
+      });
+    }
+  }
+);
+
+app.put(
+  "/exercises/:id",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+
+      const {
+        name,
+        sets,
+        reps,
+        load,
+      } = req.body;
+
+      const exercise =
+        await prisma.exercise.update({
+          where: {
+            id,
+          },
+
+          data: {
+            name,
+            sets: Number(sets),
+            reps: Number(reps),
+            load: load
+              ? Number(load)
+              : null,
+          },
+        });
+
+      res.json(exercise);
+
+    } catch (error) {
+      console.error(error);
+
+      res.status(500).json({
+        error: "Erro ao atualizar exercício",
+      });
+    }
+  }
+);
+
+app.delete(
+  "/exercises/:id",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+
+      await prisma.exercise.delete({
+        where: {
+          id,
+        },
+      });
+
+      res.status(204).send();
+
+    } catch (error) {
+      console.error(error);
+
+      res.status(500).json({
+        error: "Erro ao deletar exercício",
+      });
+    }
+  }
+);

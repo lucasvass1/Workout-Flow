@@ -4,52 +4,54 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-url      = env("DATABASE_URL")
+  url      = env("DATABASE_URL")
 }
 
 model Student {
-  id      Int      @id @default(autoincrement())
-  name    String
-  age     Int
-  plan    String?
-  
- 
+  id       Int      @id @default(autoincrement())
+  name     String
+  age      Int
+  plan     String?
 
-  userId  Int
-  user    User     @relation(fields: [userId], references: [id])
+  userId   Int
+  user     User     @relation(fields: [userId], references: [id])
 
   workouts Workout[]
 }
 
 model Workout {
- id       Int        @id @default(autoincrement())
-  name     String
+  id         Int        @id @default(autoincrement())
+  name       String
 
-  studentId Int
-  student   Student   @relation(fields: [studentId], references: [id])
+  studentId  Int
+  student    Student    @relation(fields: [studentId], references: [id])
 
-  userId    Int
-  user      User      @relation(fields: [userId], references: [id])
-  exercises Exercise[]
+  userId     Int
+  user       User       @relation(fields: [userId], references: [id])
+
+  exercises  Exercise[]
 }
 
 model Exercise {
-  id        Int    @id @default(autoincrement())
-  name      String
-  sets      Int
-  reps      Int
-  weight    Float
+  id         Int      @id @default(autoincrement())
 
-  workoutId Int
-  workout   Workout @relation(fields: [workoutId], references: [id])
+  name       String
+  sets       Int
+  reps       Int
+  weight     Float?
+
+  workoutId  Int
+  workout    Workout  @relation(fields: [workoutId], references: [id])
 }
 
 model User {
-    id        Int      @id @default(autoincrement())
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
+  id         Int       @id @default(autoincrement())
 
-  students Student[]
-  workouts Workout[]
+  email      String    @unique
+  password   String
+
+  createdAt  DateTime  @default(now())
+
+  students   Student[]
+  workouts   Workout[]
 }
