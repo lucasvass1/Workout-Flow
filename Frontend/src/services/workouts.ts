@@ -1,4 +1,5 @@
 import { apiFetch } from "./api";
+import { BASE_URL } from "./api/config";
 
 const API_URL = "https://workout-flow.onrender.com";
 
@@ -37,4 +38,39 @@ export async function deleteWorkout(id: number) {
   });
 
   if (!res.ok) throw new Error("Erro ao deletar treino");
+}
+
+export async function updateWorkout(
+  id: number,
+  data: {
+    name: string;
+    studentId: number;
+  }
+) {
+  const token =
+    localStorage.getItem("token");
+
+  const res = await fetch(
+    `${BASE_URL}/workouts/${id}`,
+    {
+      method: "PUT",
+
+      headers: {
+        "Content-Type":
+          "application/json",
+
+        Authorization: `Bearer ${token}`,
+      },
+
+      body: JSON.stringify(data),
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error(
+      "Erro ao atualizar treino"
+    );
+  }
+
+  return res.json();
 }

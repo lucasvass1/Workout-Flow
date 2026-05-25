@@ -582,3 +582,46 @@ app.listen(PORT, () => {
     `Servidor rodando na porta ${PORT}`
   );
 });
+
+app.put(
+  "/workouts/:id",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+
+      const { name, studentId } = req.body;
+
+      const workout =
+        await prisma.workout.update({
+          where: {
+            id,
+          },
+
+          data: {
+            name,
+
+            student: {
+              connect: {
+                id: Number(studentId),
+              },
+            },
+          },
+
+          include: {
+            student: true,
+            exercises: true,
+          },
+        });
+
+      res.json(workout);
+
+    } catch (error) {
+      console.error(error);
+
+      res.status(500).json({
+        error: "Erro ao atualizar treino",
+      });
+    }
+  }
+);

@@ -4,6 +4,7 @@ import {
   getWorkouts,
   createWorkout,
   deleteWorkout,
+  updateWorkout,
 } from "../services/workouts";
 
 import {
@@ -67,6 +68,15 @@ export function Workouts() {
 
   const [weight, setWeight] =
     useState("");
+
+const [editingWorkoutId, setEditingWorkoutId] =
+  useState<number | null>(null);
+
+const [editWorkoutName, setEditWorkoutName] =
+  useState("");
+
+const [editStudentId, setEditStudentId] =
+  useState("");
 
   async function refreshWorkouts() {
     try {
@@ -352,11 +362,21 @@ export function Workouts() {
                 >
                   Deletar
                 </button>
+                
+                <button
+                  onClick={() => {
+                    setEditingWorkoutId(workout.id);
+                    setEditWorkoutName(workout.name);
+                    setEditStudentId("");
+                  }}
+                  className="rounded bg-yellow-500 px-2 py-1"
+                >
+                  Editar
+                </button>
               </div>
             </div>
 
-            {expandedWorkoutId ===
-              workout.id && (
+            {expandedWorkoutId === workout.id && (
               <div className="mt-4 rounded bg-gray-900 p-4">
                 <h3 className="mb-4 text-lg font-bold">
                   Exercícios
@@ -477,6 +497,54 @@ export function Workouts() {
                     cadastrado
                   </p>
                 )}
+              </div>
+            )}
+
+            {editingWorkoutId === workout.id && (
+              <div className="mt-4 flex flex-col gap-2">
+                <input
+                  value={editWorkoutName}
+                  onChange={(e) =>
+                    setEditWorkoutName(e.target.value)
+                  }
+                  className="rounded bg-gray-700 p-2"
+                />
+
+                <select
+                  value={editStudentId}
+                  onChange={(e) =>
+                    setEditStudentId(e.target.value)
+                  }
+                  className="rounded bg-gray-700 p-2"
+                >
+                  <option value="">Selecione um aluno</option>
+
+                  {students.map((student) => (
+                    <option key={student.id} value={student.id}>
+                      {student.name}
+                    </option>
+                  ))}
+                </select>
+
+                <button
+                  onClick={async () => {
+                    try {
+                      await updateWorkout(workout.id, {
+                        name: editWorkoutName,
+                        studentId: Number(editStudentId),
+                      });
+
+                      setEditingWorkoutId(null);
+
+                      await refreshWorkouts();
+                    } catch (error) {
+                      console.error(error);
+                    }
+                  }}
+                  className="rounded bg-green-600 p-2"
+                >
+                  Salvar
+                </button>
               </div>
             )}
           </div>
