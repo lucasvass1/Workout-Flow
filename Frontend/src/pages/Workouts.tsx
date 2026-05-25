@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
 
 import {
   getWorkouts,
@@ -69,14 +70,14 @@ export function Workouts() {
   const [weight, setWeight] =
     useState("");
 
-const [editingWorkoutId, setEditingWorkoutId] =
-  useState<number | null>(null);
+  const [editingWorkoutId, setEditingWorkoutId] =
+    useState<number | null>(null);
 
-const [editWorkoutName, setEditWorkoutName] =
-  useState("");
+  const [editWorkoutName, setEditWorkoutName] =
+    useState("");
 
-const [editStudentId, setEditStudentId] =
-  useState("");
+  const [editStudentId, setEditStudentId] =
+    useState("");
 
   async function refreshWorkouts() {
     try {
@@ -87,8 +88,13 @@ const [editStudentId, setEditStudentId] =
           ? data
           : []
       );
+
     } catch (error) {
       console.error(error);
+
+      toast.error(
+        "Erro ao atualizar treinos"
+      );
     }
   }
 
@@ -138,6 +144,10 @@ const [editStudentId, setEditStudentId] =
 
         setStudents([]);
         setWorkouts([]);
+
+        toast.error(
+          "Erro ao carregar dados"
+        );
       }
     }
 
@@ -150,7 +160,10 @@ const [editStudentId, setEditStudentId] =
     e.preventDefault();
 
     if (!studentId) {
-      alert("Selecione um aluno");
+      toast.error(
+        "Selecione um aluno"
+      );
+
       return;
     }
 
@@ -165,8 +178,16 @@ const [editStudentId, setEditStudentId] =
 
       await refreshWorkouts();
 
+      toast.success(
+        "Treino criado com sucesso"
+      );
+
     } catch (error) {
       console.error(error);
+
+      toast.error(
+        "Erro ao criar treino"
+      );
     }
   }
 
@@ -178,8 +199,16 @@ const [editStudentId, setEditStudentId] =
 
       await refreshWorkouts();
 
+      toast.success(
+        "Treino removido"
+      );
+
     } catch (error) {
       console.error(error);
+
+      toast.error(
+        "Erro ao deletar treino"
+      );
     }
   }
 
@@ -211,6 +240,10 @@ const [editStudentId, setEditStudentId] =
 
     } catch (error) {
       console.error(error);
+
+      toast.error(
+        "Erro ao buscar exercícios"
+      );
     }
   }
 
@@ -236,10 +269,19 @@ const [editStudentId, setEditStudentId] =
       setWeight("");
 
       await fetchExercises(workoutId);
+
       await refreshWorkouts();
+
+      toast.success(
+        "Exercício criado com sucesso"
+      );
 
     } catch (error) {
       console.error(error);
+
+      toast.error(
+        "Erro ao criar exercício"
+      );
     }
   }
 
@@ -257,8 +299,16 @@ const [editStudentId, setEditStudentId] =
 
       await refreshWorkouts();
 
+      toast.success(
+        "Exercício removido"
+      );
+
     } catch (error) {
       console.error(error);
+
+      toast.error(
+        "Erro ao remover exercício"
+      );
     }
   }
 
@@ -269,6 +319,7 @@ const [editStudentId, setEditStudentId] =
       expandedWorkoutId === workoutId
     ) {
       setExpandedWorkoutId(null);
+
       return;
     }
 
@@ -278,7 +329,9 @@ const [editStudentId, setEditStudentId] =
   }
 
   return (
-    <div className="flex flex-col gap-6 min-w-0">
+    <div className="flex min-w-0 flex-col gap-6">
+      <Toaster position="top-right" />
+
       <h1 className="text-2xl font-bold">
         Treinos
       </h1>
@@ -362,11 +415,17 @@ const [editStudentId, setEditStudentId] =
                 >
                   Deletar
                 </button>
-                
+
                 <button
                   onClick={() => {
-                    setEditingWorkoutId(workout.id);
-                    setEditWorkoutName(workout.name);
+                    setEditingWorkoutId(
+                      workout.id
+                    );
+
+                    setEditWorkoutName(
+                      workout.name
+                    );
+
                     setEditStudentId("");
                   }}
                   className="rounded bg-yellow-500 px-2 py-1"
@@ -376,7 +435,8 @@ const [editStudentId, setEditStudentId] =
               </div>
             </div>
 
-            {expandedWorkoutId === workout.id && (
+            {expandedWorkoutId ===
+              workout.id && (
               <div className="mt-4 rounded bg-gray-900 p-4">
                 <h3 className="mb-4 text-lg font-bold">
                   Exercícios
@@ -500,12 +560,15 @@ const [editStudentId, setEditStudentId] =
               </div>
             )}
 
-            {editingWorkoutId === workout.id && (
+            {editingWorkoutId ===
+              workout.id && (
               <div className="mt-4 flex flex-col gap-2">
                 <input
                   value={editWorkoutName}
                   onChange={(e) =>
-                    setEditWorkoutName(e.target.value)
+                    setEditWorkoutName(
+                      e.target.value
+                    )
                   }
                   className="rounded bg-gray-700 p-2"
                 />
@@ -513,32 +576,58 @@ const [editStudentId, setEditStudentId] =
                 <select
                   value={editStudentId}
                   onChange={(e) =>
-                    setEditStudentId(e.target.value)
+                    setEditStudentId(
+                      e.target.value
+                    )
                   }
                   className="rounded bg-gray-700 p-2"
                 >
-                  <option value="">Selecione um aluno</option>
+                  <option value="">
+                    Selecione um aluno
+                  </option>
 
-                  {students.map((student) => (
-                    <option key={student.id} value={student.id}>
-                      {student.name}
-                    </option>
-                  ))}
+                  {students.map(
+                    (student) => (
+                      <option
+                        key={student.id}
+                        value={student.id}
+                      >
+                        {student.name}
+                      </option>
+                    )
+                  )}
                 </select>
 
                 <button
                   onClick={async () => {
                     try {
-                      await updateWorkout(workout.id, {
-                        name: editWorkoutName,
-                        studentId: Number(editStudentId),
-                      });
+                      await updateWorkout(
+                        workout.id,
+                        {
+                          name: editWorkoutName,
+                          studentId:
+                            Number(
+                              editStudentId
+                            ),
+                        }
+                      );
 
-                      setEditingWorkoutId(null);
+                      setEditingWorkoutId(
+                        null
+                      );
 
                       await refreshWorkouts();
+
+                      toast.success(
+                        "Treino atualizado"
+                      );
+
                     } catch (error) {
                       console.error(error);
+
+                      toast.error(
+                        "Erro ao atualizar treino"
+                      );
                     }
                   }}
                   className="rounded bg-green-600 p-2"
