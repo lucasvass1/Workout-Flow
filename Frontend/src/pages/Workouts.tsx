@@ -13,11 +13,16 @@ import {
 
 import { BASE_URL } from "../services/api/config";
 
-import type { Exercise } from "../types/exercise";
+type Exercise = {
+  id: number;
+  name: string;
+  sets: number;
+  reps: number;
+  weight: number | null;
+};
 
 type Workout = {
   id: number;
-
   name: string;
 
   student: {
@@ -45,6 +50,12 @@ export function Workouts() {
   const [studentId, setStudentId] =
     useState("");
 
+  const [expandedWorkoutId, setExpandedWorkoutId] =
+    useState<number | null>(null);
+
+  const [exercises, setExercises] =
+    useState<Exercise[]>([]);
+
   const [exerciseName, setExerciseName] =
     useState("");
 
@@ -58,13 +69,17 @@ export function Workouts() {
     useState("");
 
   async function refreshWorkouts() {
-    const data = await getWorkouts();
+    try {
+      const data = await getWorkouts();
 
-    setWorkouts(
-      Array.isArray(data)
-        ? data
-        : []
-    );
+      setWorkouts(
+        Array.isArray(data)
+          ? data
+          : []
+      );
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   useEffect(() => {
@@ -107,6 +122,7 @@ export function Workouts() {
             ? studentsData.students
             : []
         );
+
       } catch (error) {
         console.error(error);
 
@@ -138,16 +154,51 @@ export function Workouts() {
       setStudentId("");
 
       await refreshWorkouts();
+
     } catch (error) {
       console.error(error);
     }
   }
 
-  async function handleDelete(id: number) {
+  async function handleDeleteWorkout(
+    id: number
+  ) {
     try {
       await deleteWorkout(id);
 
       await refreshWorkouts();
+
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function fetchExercises(
+    workoutId: number
+  ) {
+    try {
+      const token =
+        localStorage.getItem("token");
+
+      const res = await fetch(
+        `${BASE_URL}/workouts/${workoutId}/exercises`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!res.ok) {
+        throw new Error(
+          "Erro ao buscar exercícios"
+        );
+      }
+
+      const data = await res.json();
+
+      setExercises(data);
+
     } catch (error) {
       console.error(error);
     }
@@ -161,11 +212,8 @@ export function Workouts() {
         workoutId,
         {
           name: exerciseName,
-
           sets: Number(sets),
-
           reps: Number(reps),
-
           weight: weight
             ? Number(weight)
             : null,
@@ -177,22 +225,46 @@ export function Workouts() {
       setReps("");
       setWeight("");
 
+      await fetchExercises(workoutId);
       await refreshWorkouts();
+
     } catch (error) {
       console.error(error);
     }
   }
 
   async function handleDeleteExercise(
-    id: number
+    exerciseId: number
   ) {
     try {
-      await deleteExercise(id);
+      await deleteExercise(exerciseId);
+
+      if (expandedWorkoutId) {
+        await fetchExercises(
+          expandedWorkoutId
+        );
+      }
 
       await refreshWorkouts();
+
     } catch (error) {
       console.error(error);
     }
+  }
+
+  async function toggleExercises(
+    workoutId: number
+  ) {
+    if (
+      expandedWorkoutId === workoutId
+    ) {
+      setExpandedWorkoutId(null);
+      return;
+    }
+
+    setExpandedWorkoutId(workoutId);
+
+    await fetchExercises(workoutId);
   }
 
   return (
@@ -211,7 +283,7 @@ export function Workouts() {
           onChange={(e) =>
             setName(e.target.value)
           }
-          className="bg-gray-700 p-2 rounded"
+          className="rounded bg-gray-700 p-2"
         />
 
         <select
@@ -219,141 +291,194 @@ export function Workouts() {
           onChange={(e) =>
             setStudentId(e.target.value)
           }
-          className="bg-gray-700 p-2 rounded"
+          className="rounded bg-gray-700 p-2"
         >
           <option value="">
             Selecione um aluno
           </option>
 
-          {students.map((s) => (
+          {students.map((student) => (
             <option
-              key={s.id}
-              value={s.id}
+              key={student.id}
+              value={student.id}
             >
-              {s.name}
+              {student.name}
             </option>
           ))}
         </select>
 
         <button
           type="submit"
-          className="bg-blue-500 p-2 rounded"
+          className="rounded bg-blue-500 p-2"
         >
           Criar treino
         </button>
       </form>
 
-      <div className="bg-gray-800 p-4 rounded-xl">
-        {workouts.map((w) => (
+      <div className="rounded-xl bg-gray-800 p-4">
+        {workouts.map((workout) => (
           <div
-            key={w.id}
+            key={workout.id}
             className="border-b py-4"
           >
-            <div className="flex justify-between">
+            <div className="flex items-center justify-between">
               <span>
-                {w.name} -{" "}
-                {w.student.name}
+                {workout.name} -{" "}
+                {workout.student.name}
               </span>
 
-              <button
-                onClick={() =>
-                  handleDelete(w.id)
-                }
-                className="bg-red-500 p-1 rounded"
-              >
-                Deletar
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={() =>
+                    toggleExercises(
+                      workout.id
+                    )
+                  }
+                  className="rounded bg-gray-700 px-3 py-1"
+                >
+                  {expandedWorkoutId ===
+                  workout.id
+                    ? "Fechar"
+                    : "Ver exercícios"}
+                </button>
+
+                <button
+                  onClick={() =>
+                    handleDeleteWorkout(
+                      workout.id
+                    )
+                  }
+                  className="rounded bg-red-500 px-3 py-1"
+                >
+                  Deletar
+                </button>
+              </div>
             </div>
 
-            <div className="mt-4 flex flex-col gap-2">
-              <input
-                placeholder="Exercício"
-                value={exerciseName}
-                onChange={(e) =>
-                  setExerciseName(
-                    e.target.value
-                  )
-                }
-                className="rounded bg-gray-700 p-2"
-              />
+            {expandedWorkoutId ===
+              workout.id && (
+              <div className="mt-4 rounded bg-gray-900 p-4">
+                <h3 className="mb-4 text-lg font-bold">
+                  Exercícios
+                </h3>
 
-              <input
-                placeholder="Séries"
-                value={sets}
-                onChange={(e) =>
-                  setSets(e.target.value)
-                }
-                className="rounded bg-gray-700 p-2"
-              />
+                <div className="mb-4 flex flex-col gap-2">
+                  <input
+                    type="text"
+                    placeholder="Nome exercício"
+                    value={exerciseName}
+                    onChange={(e) =>
+                      setExerciseName(
+                        e.target.value
+                      )
+                    }
+                    className="rounded bg-gray-700 p-2"
+                  />
 
-              <input
-                placeholder="Repetições"
-                value={reps}
-                onChange={(e) =>
-                  setReps(e.target.value)
-                }
-                className="rounded bg-gray-700 p-2"
-              />
+                  <input
+                    type="number"
+                    placeholder="Séries"
+                    value={sets}
+                    onChange={(e) =>
+                      setSets(
+                        e.target.value
+                      )
+                    }
+                    className="rounded bg-gray-700 p-2"
+                  />
 
-              <input
-                placeholder="Peso"
-                value={weight}
-                onChange={(e) =>
-                  setWeight(
-                    e.target.value
-                  )
-                }
-                className="rounded bg-gray-700 p-2"
-              />
+                  <input
+                    type="number"
+                    placeholder="Repetições"
+                    value={reps}
+                    onChange={(e) =>
+                      setReps(
+                        e.target.value
+                      )
+                    }
+                    className="rounded bg-gray-700 p-2"
+                  />
 
-              <button
-                onClick={() =>
-                  handleCreateExercise(
-                    w.id
-                  )
-                }
-                className="rounded bg-green-600 p-2"
-              >
-                Adicionar exercício
-              </button>
-            </div>
+                  <input
+                    type="number"
+                    placeholder="Carga"
+                    value={weight}
+                    onChange={(e) =>
+                      setWeight(
+                        e.target.value
+                      )
+                    }
+                    className="rounded bg-gray-700 p-2"
+                  />
 
-            <div className="mt-4 flex flex-col gap-2">
-              {w.exercises?.map(
-                (exercise) => (
-                  <div
-                    key={exercise.id}
-                    className="rounded bg-gray-700 p-3"
+                  <button
+                    onClick={() =>
+                      handleCreateExercise(
+                        workout.id
+                      )
+                    }
+                    className="rounded bg-green-600 p-2"
                   >
-                    <div className="font-bold">
-                      {exercise.name}
-                    </div>
+                    Adicionar exercício
+                  </button>
+                </div>
 
-                    <div>
-                      {exercise.sets}x
-                      {exercise.reps}
-                    </div>
+                {exercises.length > 0 ? (
+                  <div className="flex flex-col gap-3">
+                    {exercises.map(
+                      (exercise) => (
+                        <div
+                          key={exercise.id}
+                          className="rounded bg-gray-800 p-3"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="font-semibold">
+                                {
+                                  exercise.name
+                                }
+                              </p>
 
-                    <div>
-                      {exercise.weight ??
-                        0}
-                      kg
-                    </div>
+                              <p className="text-sm text-gray-400">
+                                {
+                                  exercise.sets
+                                }
+                                x
+                                {
+                                  exercise.reps
+                                }
+                              </p>
 
-                    <button
-                      onClick={() =>
-                        handleDeleteExercise(
-                          exercise.id
-                        )
-                      }
-                      className="mt-2 rounded bg-red-500 px-2 py-1"
-                    >
-                      Remover
-                    </button>
+                              <p className="text-sm text-gray-400">
+                                {exercise.weight ??
+                                  0}
+                                kg
+                              </p>
+                            </div>
+
+                            <button
+                              onClick={() =>
+                                handleDeleteExercise(
+                                  exercise.id
+                                )
+                              }
+                              className="rounded bg-red-600 px-3 py-1"
+                            >
+                              Excluir
+                            </button>
+                          </div>
+                        </div>
+                      )
+                    )}
                   </div>
-                )
-              )}
-            </div>
+                ) : (
+                  <p className="text-gray-400">
+                    Nenhum exercício
+                    cadastrado
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         ))}
       </div>
