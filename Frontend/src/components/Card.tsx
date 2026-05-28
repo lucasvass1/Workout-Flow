@@ -1,6 +1,6 @@
 interface cardProps {
     title: string;
-    value: string;
+    value: string | number;
 }
 
 export function Card({ title, value }: cardProps) {
