@@ -19,24 +19,8 @@ declare global {
 const app = express();
 
 const corsOptions = {
-  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-    const allowedOrigins = [
-      "http://localhost",
-      "http://localhost:5173",
-      "http://localhost:3000",
-      "http://127.0.0.1",
-      "http://127.0.0.1:5173",
-      "http://127.0.0.1:3000",
-      "https://workout-flow-fj5g-lucas-vasconcelos-s-projects.vercel.app",
-    ];
-
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true,
+  origin: "*",
+  credentials: false,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
