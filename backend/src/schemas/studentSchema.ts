@@ -1,0 +1,20 @@
+import { z } from 'zod';
+
+export const PLAN_ENUM = ['Básico', 'Intermediário', 'Avançado'] as const;
+
+export const studentCreateSchema = z.object({
+  name: z.string().min(1, 'Nome é obrigatório').max(255),
+  age: z.number().int().min(1).max(150),
+  plan: z.enum(PLAN_ENUM, {
+    errorMap: () => ({
+      message: 'Plano deve ser: Básico, Intermediário ou Avançado',
+    }),
+  }),
+  joinedAt: z.string().or(z.date()).transform(val => new Date(val)),
+  isActive: z.boolean().default(true),
+});
+
+export const studentUpdateSchema = studentCreateSchema.partial();
+
+export type StudentCreateInput = z.infer<typeof studentCreateSchema>;
+export type StudentUpdateInput = z.infer<typeof studentUpdateSchema>;

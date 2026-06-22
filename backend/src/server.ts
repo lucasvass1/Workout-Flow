@@ -1,12 +1,12 @@
 import express from "express";
 import cors from "cors";
-import authRoutes from "./routes/auth";
-import { authenticateToken } from "./middleware/auth";
-import { register } from "./auth/register";
-import { StudentController } from "./controllers/studentController";
-import { WorkoutController } from "./controllers/workoutController";
-import { DashboardController } from "./controllers/dashboardController";
-import { DashboardService } from "./services/dashboardService";
+import authRoutes from "./routes/auth.js";
+import { authenticateToken } from "./middleware/auth.js";
+import { register } from "./auth/register.js";
+import { StudentController } from "./controllers/studentController.js";
+import { WorkoutController } from "./controllers/workoutController.js";
+import { DashboardController } from "./controllers/dashboardController.js";
+import { DashboardService } from "./services/dashboardService.js";
 
 declare global {
   namespace Express {
@@ -147,7 +147,7 @@ app.get("/dashboard-test", async (_req, res) => {
 
 // DEBUG ROUTE (remover em produção)
 app.get("/debug-users", async (_req, res) => {
-  const { prisma } = await import("./lib/prisma");
+  const { prisma } = await import("./lib/prisma.js");
   const users = await prisma.user.findMany();
   res.json(users);
 });
