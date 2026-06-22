@@ -27,7 +27,7 @@ const corsOptions = {
       "http://127.0.0.1",
       "http://127.0.0.1:5173",
       "http://127.0.0.1:3000",
-      "https://workoutflow-backend.onrender.com",
+      "https://workout-flow-fj5g-lucas-vasconcelos-s-projects.vercel.app",
     ];
 
     if (!origin || allowedOrigins.includes(origin)) {
