@@ -42,11 +42,11 @@ export class DashboardService {
     });
 
     const activeStudents = await prisma.student.count({
-      where: { userId, isActive: true },
+      where: { userId, isActive: true } as any,
     });
 
     const inactiveStudents = await prisma.student.count({
-      where: { userId, isActive: false },
+      where: { userId, isActive: false } as any,
     });
 
     const totalWorkouts = await prisma.workout.count({
@@ -79,7 +79,7 @@ export class DashboardService {
           gte: firstDayCurrentMonth,
           lt: firstDayNextMonth,
         },
-      },
+      } as any,
     });
 
     // Alunos no mês anterior
@@ -90,7 +90,7 @@ export class DashboardService {
           gte: firstDayPreviousMonth,
           lt: firstDayCurrentMonth,
         },
-      },
+      } as any,
     });
 
   
@@ -112,7 +112,7 @@ export class DashboardService {
       where: {
         userId,
         isActive: true,
-      },
+      } as any,
     });
 
     let revenue = 0;
@@ -148,14 +148,14 @@ export class DashboardService {
     const nextMonthStart = addMonths(currentMonthStart, 1);
 
     const [baselineStudents, monthlyRows] = await Promise.all([
-      prisma.student.count({
+     prisma.student.count({
         where: {
           userId,
           joinedAt: {
             lt: windowStart,
           },
         },
-      }),
+      } as any),
       prisma.$queryRaw<MonthlyStudentsRow[]>`
         SELECT
           date_trunc('month', "joinedAt") AS month,
