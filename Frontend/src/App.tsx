@@ -7,13 +7,15 @@ import { Workouts } from "./pages/Workouts";
 import { Login } from "./pages/Login";
 import { PrivateRoute } from "./routes/PrivateRoute";
 import { Register } from "./pages/Register";
+import { DashboardProvider } from "./context/DashboardContext";
 
 function App() {
   const token = localStorage.getItem("token");
 
   return (
-    <BrowserRouter>
-      <Routes>
+    <DashboardProvider>
+      <BrowserRouter>
+        <Routes>
         {/* rota inicial */}
         <Route
           path="/"
@@ -59,8 +61,9 @@ function App() {
             }
           />
         </Route>
-      </Routes>
-    </BrowserRouter>
+        </Routes>
+      </BrowserRouter>
+    </DashboardProvider>
   );
 }
 

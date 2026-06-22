@@ -1,6 +1,8 @@
 export interface Student {
-    id: number;
-    name: string;
-    age: number;
-    plan: string;
+    id: string;
+  name: string;
+  age: number;
+  plan: string;
+  joinedAt: string;
+  isActive: boolean;
 }

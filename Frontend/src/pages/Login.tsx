@@ -14,7 +14,7 @@ export function Login() {
       setLoading(true);
       setError("");
 
-      const res = await fetch("https://workout-flow.onrender.com/auth/login", {
+      const res = await fetch( "https://workout-flow.onrender.com/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

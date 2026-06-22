@@ -1,15 +1,22 @@
-const API_URL =
-  "https://workout-flow.onrender.com";
+import { API_ENDPOINTS } from "../config/constants";
 
 function getToken() {
   return localStorage.getItem("token");
 }
 
+export type ExercisePayload = {
+  name: string;
+  sets: number;
+  reps: number;
+  weight?: number | null;
+};
+
 export async function getExercises(
   workoutId: number
 ) {
+  
   const res = await fetch(
-    `${API_URL}/workouts/${workoutId}/exercises`,
+    API_ENDPOINTS.EXERCISES(workoutId),
     {
       headers: {
         Authorization: `Bearer ${getToken()}`,
@@ -28,15 +35,11 @@ export async function getExercises(
 
 export async function createExercise(
   workoutId: number,
-  data: {
-    name: string;
-    sets: number;
-    reps: number;
-    weight?: number | null;
-  }
+  data: ExercisePayload
 ) {
+ 
   const res = await fetch(
-    `${API_URL}/workouts/${workoutId}/exercises`,
+    API_ENDPOINTS.EXERCISES(workoutId),
     {
       method: "POST",
 
@@ -60,11 +63,41 @@ export async function createExercise(
   return res.json();
 }
 
+export async function updateExercise(
+  id: number,
+  data: Partial<ExercisePayload>
+) {
+  const res = await fetch(
+    API_ENDPOINTS.EXERCISE(id),
+    {
+      method: "PUT",
+
+      headers: {
+        "Content-Type":
+          "application/json",
+
+        Authorization: `Bearer ${getToken()}`,
+      },
+
+      body: JSON.stringify(data),
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error(
+      "Erro ao atualizar exercício"
+    );
+  }
+
+  return res.json();
+}
+
 export async function deleteExercise(
   id: number
 ) {
+  
   const res = await fetch(
-    `${API_URL}/exercises/${id}`,
+    API_ENDPOINTS.EXERCISE(id),
     {
       method: "DELETE",
 

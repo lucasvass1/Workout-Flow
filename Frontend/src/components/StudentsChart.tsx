@@ -4,81 +4,47 @@ import {
   XAxis,
   YAxis,
   Tooltip,
+  CartesianGrid,
   ResponsiveContainer,
 } from "recharts";
-import { useEffect, useState } from "react";
-import { BASE_URL } from "../services/api/config";
-
-type StudentWorkout = {
-  name: string;
-  _count: {
-    workouts: number;
-  };
-};
-
-type DashboardResponse = {
-  workoutsPerStudent: StudentWorkout[];
-};
+import type { StudentGrowthPoint } from "../hooks/useDashboard";
 
 type ChartData = {
   month: string;
-  alunos: number;
+  totalStudents: number;
+  newStudents: number;
 };
 
-export function StudentsChart() {
-  const [data, setData] = useState<ChartData[]>([]);
+type StudentsChartProps = {
+  data: StudentGrowthPoint[];
+};
 
-  useEffect(() => {
-    async function load() {
-      try {
-        const token = localStorage.getItem("token");
-
-        const res = await fetch(`${BASE_URL}/dashboard`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!res.ok) {
-          throw new Error("Erro ao buscar dashboard");
-        }
-
-        const json: DashboardResponse = await res.json();
-
-        const formatted = (json.workoutsPerStudent || []).map(
-          (student) => ({
-            month: student.name,
-            alunos: student._count.workouts,
-          })
-        );
-
-        setData(formatted);
-      } catch (error) {
-        console.error("Erro no gráfico:", error);
-      }
-    }
-
-    load();
-  }, []);
+export function StudentsChart({ data }: StudentsChartProps) {
+  const chartData: ChartData[] = data;
 
   return (
-    <div className="bg-gray-800 p-5 rounded-xl w-full min-w-0">
-      <h2 className="text-lg mb-4 text-white">
-        Crescimento de alunos
+    <div className="w-full min-w-0 rounded-xl bg-gray-800 p-5">
+      <h2 className="mb-4 text-lg text-white">
+        Crescimento de alunos (12 meses)
       </h2>
 
-      <div className="w-full min-w-0 h-[300px]">
+      <div className="h-[300px] w-full min-w-0">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data}>
+          <LineChart data={chartData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
             <XAxis dataKey="month" stroke="#ffffff" />
             <YAxis stroke="#ffffff" />
-            <Tooltip />
+            <Tooltip
+              contentStyle={{ backgroundColor: "#111827", border: "1px solid #374151" }}
+              labelStyle={{ color: "#ffffff" }}
+            />
 
             <Line
               type="monotone"
-              dataKey="alunos"
+              dataKey="totalStudents"
               stroke="#3b82f6"
               strokeWidth={3}
+              dot={false}
             />
           </LineChart>
         </ResponsiveContainer>

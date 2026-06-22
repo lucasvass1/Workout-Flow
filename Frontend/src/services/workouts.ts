@@ -1,7 +1,5 @@
 import { apiFetch } from "./api";
-import { BASE_URL } from "./api/config";
-
-const API_URL = "https://workout-flow.onrender.com";
+import { API_ENDPOINTS } from "../config/constants";
 
 type CreateWorkoutData = {
   name: string;
@@ -9,7 +7,8 @@ type CreateWorkoutData = {
 };
 
 export async function getWorkouts() {
-  const res = await apiFetch(`${API_URL}/workouts`);
+
+  const res = await apiFetch(API_ENDPOINTS.WORKOUTS);
   if (!res.ok) throw new Error("Erro ao buscar treinos");
   return res.json();
 }
@@ -17,7 +16,8 @@ export async function getWorkouts() {
 export async function createWorkout(data: CreateWorkoutData) {
   console.log("DADOS ENVIADOS:", data);
 
-  const res = await apiFetch(`${API_URL}/workouts`, {
+
+  const res = await apiFetch(API_ENDPOINTS.WORKOUTS, {
     method: "POST",
     body: JSON.stringify(data),
   });
@@ -33,7 +33,8 @@ export async function createWorkout(data: CreateWorkoutData) {
 }
 
 export async function deleteWorkout(id: number) {
-  const res = await apiFetch(`${API_URL}/workouts/${id}`, {
+  
+  const res = await apiFetch(API_ENDPOINTS.WORKOUT(id), {
     method: "DELETE",
   });
 
@@ -47,29 +48,23 @@ export async function updateWorkout(
     studentId: number;
   }
 ) {
-  const token =
-    localStorage.getItem("token");
+  const token = localStorage.getItem("token");
 
-  const res = await fetch(
-    `${BASE_URL}/workouts/${id}`,
-    {
-      method: "PUT",
 
-      headers: {
-        "Content-Type":
-          "application/json",
+  const res = await fetch(API_ENDPOINTS.WORKOUT(id), {
+    method: "PUT",
 
-        Authorization: `Bearer ${token}`,
-      },
+    headers: {
+      "Content-Type": "application/json",
 
-      body: JSON.stringify(data),
-    }
-  );
+      Authorization: `Bearer ${token}`,
+    },
+
+    body: JSON.stringify(data),
+  });
 
   if (!res.ok) {
-    throw new Error(
-      "Erro ao atualizar treino"
-    );
+    throw new Error("Erro ao atualizar treino");
   }
 
   return res.json();

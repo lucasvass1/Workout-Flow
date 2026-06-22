@@ -1,5 +1,10 @@
 import { prisma } from '../lib/prisma.js';
-import { workoutCreateSchema, workoutUpdateSchema, exerciseCreateSchema } from '../schemas/workoutSchema.js';
+import {
+  workoutCreateSchema,
+  workoutUpdateSchema,
+  exerciseCreateSchema,
+  exerciseUpdateSchema
+} from '../schemas/workoutSchema.js';
 
 export class WorkoutService {
   static async getWorkouts(userId: number) {

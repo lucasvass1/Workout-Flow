@@ -12,16 +12,9 @@ import {
   createExercise,
   deleteExercise,
 } from "../services/exercises";
+import type { Exercise } from "../types/exercise";
 
 import { BASE_URL } from "../services/api/config";
-
-type Exercise = {
-  id: number;
-  name: string;
-  sets: number;
-  reps: number;
-  weight: number | null;
-};
 
 type Workout = {
   id: number;
@@ -257,9 +250,10 @@ export function Workouts() {
           name: exerciseName,
           sets: Number(sets),
           reps: Number(reps),
-          weight: weight
-            ? Number(weight)
-            : null,
+          weight:
+            weight.trim() === ""
+              ? null
+              : Number(weight),
         }
       );
 

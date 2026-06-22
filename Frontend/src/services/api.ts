@@ -1,9 +1,10 @@
-type StudentPayload = Record<string, unknown>;
+import { API_ENDPOINTS } from '../config/constants';
 
-const API_URL = "https://workout-flow.onrender.com";
+type StudentPayload = Record<string, unknown>;
 
 export async function apiFetch(url: string, options: RequestInit = {}) {
   const token = localStorage.getItem("token");
+  console.log("TOKEN:", token);
 
   return fetch(url, {
     ...options,
@@ -29,7 +30,7 @@ export async function getStudents(
   });
 
   const res = await apiFetch(
-    `${API_URL}/students?${params.toString()}`
+    `${API_ENDPOINTS.STUDENTS}?${params.toString()}`
   );
 
   if (!res.ok) {
@@ -40,17 +41,19 @@ export async function getStudents(
 }
 
 export async function createStudent(data: StudentPayload) {
-  const res = await apiFetch(`${API_URL}/students`, {
+
+  const res = await apiFetch(API_ENDPOINTS.STUDENTS, {
     method: "POST",
     body: JSON.stringify(data),
   });
 
   if (!res.ok) throw new Error("Erro ao criar aluno");
+
   return res.json();
 }
 
 export async function updateStudent(id: number, data: StudentPayload) {
-  const res = await apiFetch(`${API_URL}/students/${id}`, {
+  const res = await apiFetch(API_ENDPOINTS.STUDENT(id), {
     method: "PUT",
     body: JSON.stringify(data),
   });
@@ -60,7 +63,7 @@ export async function updateStudent(id: number, data: StudentPayload) {
 }
 
 export async function deleteStudent(id: number) {
-  const res = await apiFetch(`${API_URL}/students/${id}`, {
+  const res = await apiFetch(API_ENDPOINTS.STUDENT(id), {
     method: "DELETE",
   });
 

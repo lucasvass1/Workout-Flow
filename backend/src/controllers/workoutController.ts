@@ -11,7 +11,7 @@ function parseId(id: string) {
 }
 
 function handleZodError(error: ZodError) {
-  const errors = error.errors.map((err: any) => ({
+const errors = error.issues.map((err: any) => ({
     field: err.path.join('.'),
     message: err.message,
   }));

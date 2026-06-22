@@ -1,18 +1,35 @@
 import { useEffect, useState } from "react";
+import { API_ENDPOINTS } from "../config/constants";
+import { useDashboardRefreshVersion } from "../context/DashboardContext";
+
+export type StudentGrowthPoint = {
+  month: string;
+  newStudents: number;
+  totalStudents: number;
+};
 
 type DashboardData = {
   totalStudents: number;
   newStudents: number;
+  totalWorkouts: number;
+  activeStudents: number;
+  inactiveStudents: number;
   revenue: number;
   growth: number;
-  positiveFeedback: number;
-  negativeFeedback: number;
+  activeRate: number;
+  plansCount: {
+    basico: number;
+    intermediario: number;
+    avancado: number;
+  };
+  studentGrowth: StudentGrowthPoint[];
 };
 
 export function useDashboard() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const refreshVersion = useDashboardRefreshVersion();
 
   async function fetchDashboard() {
     try {
@@ -21,14 +38,12 @@ export function useDashboard() {
 
       const token = localStorage.getItem("token");
 
-      const res = await fetch(
-        "https://workout-flow.onrender.com/dashboard",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+     
+      const res = await fetch(API_ENDPOINTS.DASHBOARD, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (!res.ok) {
         throw new Error("Erro ao buscar dashboard");
@@ -47,7 +62,7 @@ export function useDashboard() {
 
   useEffect(() => {
     fetchDashboard();
-  }, []);
+  }, [refreshVersion]);
 
   return {
     data,

@@ -11,11 +11,10 @@ function parseId(id: string) {
 }
 
 function handleZodError(error: ZodError) {
-  const errors = error.errors.map((err: any) => ({
+  return error.issues.map((err) => ({
     field: err.path.join('.'),
     message: err.message,
   }));
-  return errors;
 }
 
 export class StudentController {

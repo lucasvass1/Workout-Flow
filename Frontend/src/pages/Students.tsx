@@ -11,13 +11,14 @@ import {
   deleteStudent,
 } from "../services/api.ts";
 
-import { useForm } from "react-hook-form";
+import { useForm, type SubmitHandler } from "react-hook-form";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { studentSchema } from "../Schemas/StudentsSchema";
 
 import type { StudentFormData } from "../Schemas/StudentsSchema";
+import { useDashboardRefresh } from "../context/DashboardContext";
 
 type ModalProps = {
   isOpen: boolean;
@@ -66,6 +67,7 @@ export function Students() {
     useState("");
 
   const navigate = useNavigate();
+  const { refresh } = useDashboardRefresh();
 
   useEffect(() => {
     const token =
@@ -118,16 +120,22 @@ export function Students() {
   }, [navigate, page, search]);
 
   const {
-    register,
-    handleSubmit,
-    reset,
-    setValue,
+  register,
+  handleSubmit,
+  reset,
+  setValue,
+  formState: { errors },
+} = useForm<StudentFormData>({
+  resolver: zodResolver(studentSchema),
 
-    formState: { errors },
-  } = useForm<StudentFormData>({
-    resolver:
-      zodResolver(studentSchema),
-  });
+  defaultValues: {
+    name: "",
+    age: 0,
+    plan: "",
+    joinedAt: "",
+    isActive: true,
+  },
+});
 
   async function handleDelete(
     id: number
@@ -149,6 +157,8 @@ export function Students() {
         setStudents(updated.students);
       }
 
+      refresh();
+
       toast.success(
         "Aluno removido com sucesso"
       );
@@ -165,9 +175,13 @@ export function Students() {
     }
   }
 
-  async function onSubmit(
-    data: StudentFormData
-  ) {
+ const onSubmit: SubmitHandler<StudentFormData> = async (
+  data
+) => {
+  console.log("FORM DATA:", data);
+  console.log("isActive:", data.isActive);
+  console.log("typeof:", typeof data.isActive);
+    
     try {
       if (editingId !== null) {
         await updateStudent(
@@ -201,6 +215,8 @@ export function Students() {
         setStudents(updated.students);
       }
 
+      refresh();
+
       reset();
 
       setEditingId(null);
@@ -217,12 +233,12 @@ export function Students() {
         "Erro ao salvar aluno"
       );
     }
-  }
+  };
 
   function handleEdit(
     student: Student
   ) {
-    setEditingId(student.id);
+    setEditingId(Number(student.id));
 
     setIsModalOpen(true);
 
@@ -239,6 +255,15 @@ export function Students() {
     setValue(
       "plan",
       student.plan
+    );
+    setValue(
+      "joinedAt",
+      student.joinedAt?.split("T")[0] ?? ""
+    );
+
+    setValue(
+      "isActive",
+      student.isActive
     );
   }
 
@@ -308,8 +333,7 @@ export function Students() {
           {errors.name && (
             <span className="text-sm text-red-400">
               {
-                errors.name
-                  .message
+                String(errors.name.message)
               }
             </span>
           )}
@@ -326,23 +350,44 @@ export function Students() {
           {errors.age && (
             <span className="text-sm text-red-400">
               {
-                errors.age
-                  .message
+                String(errors.age.message)
               }
             </span>
           )}
 
-          <input
+          <select
             {...register("plan")}
-            placeholder="Plano"
+            className="rounded bg-gray-700 p-2 text-white"
+          >
+            <option value="">Selecione um plano</option>
+
+            <option value="Básico">Básico</option>
+
+            <option value="Intermediário">Intermediário</option>
+
+            <option value="Avançado">Avançado</option>
+          </select>
+
+          <input
+            type="date"
+            {...register("joinedAt")}
             className="rounded bg-gray-700 p-2 text-white"
           />
+
+<select
+  {...register("isActive", {
+    setValueAs: (value) => value === "true",
+  })}
+  className="rounded bg-gray-700 p-2 text-white"
+>
+  <option value="true">Ativo</option>
+  <option value="false">Inativo</option>
+</select>
 
           {errors.plan && (
             <span className="text-sm text-red-400">
               {
-                errors.plan
-                  .message
+                String(errors.plan.message)
               }
             </span>
           )}
@@ -367,7 +412,9 @@ export function Students() {
 
               <th>Plano</th>
 
-              <th>Ações</th>
+<th>Status</th>
+
+<th>Ações</th>
             </tr>
           </thead>
 
@@ -387,8 +434,10 @@ export function Students() {
                       {student.age}
                     </td>
 
+                    <td>{student.plan}</td>
+
                     <td>
-                      {student.plan}
+                      {student.isActive ? "Ativo" : "Inativo"}
                     </td>
 
                     <td className="flex gap-2">
@@ -406,7 +455,7 @@ export function Students() {
                       <button
                         onClick={() =>
                           handleDelete(
-                            student.id
+                            Number(student.id)
                           )
                         }
                         className="text-red-400 hover:text-red-600"
@@ -420,7 +469,7 @@ export function Students() {
             ) : (
               <tr>
                 <td
-                  colSpan={4}
+                  colSpan={5}
                   className="py-4 text-center text-gray-400"
                 >
                   Nenhum aluno
