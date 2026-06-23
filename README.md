@@ -1,95 +1,131 @@
 # 🏋️‍♂️ WorkoutFlow
 
-Sistema completo de gestão de alunos e treinos para academias, desenvolvido com foco em performance, organização e experiência do usuário.
+Sistema completo de gestão de alunos e treinos, desenvolvido com foco em organização, performance, segurança e experiência do usuário.
 
-🔗 **Acesse o projeto:**  
+🔗 **Acesse o projeto:**
 https://workout-flow-fj5g-lucas-vasconcelos-s-projects.vercel.app/
 
 ---
 
 # ✨ Funcionalidades
 
-## 🔐 Autenticação de usuários
+## 🔐 Autenticação e Segurança
 
-- Cadastro de usuários
-- Login com JWT
-- Rotas protegidas
-- Middleware de autenticação
-- Isolamento de dados por usuário
-
----
-
-## 📊 Dashboard
-
-- Visão geral do sistema
-- Total de alunos
-- Total de treinos
-- Métricas por aluno
-- Estrutura preparada para gráficos e analytics
+* Cadastro de usuários
+* Login com JWT
+* Senhas criptografadas com bcrypt
+* Middleware de autenticação
+* Rotas protegidas
+* Isolamento completo dos dados por usuário
+* Validação de permissões
 
 ---
 
-## 👥 Gestão de alunos (CRUD completo)
+## 📊 Dashboard Inteligente
 
-- ➕ Criar aluno
-- ✏️ Editar aluno
-- 🗑️ Deletar aluno
-- 📋 Listagem paginada
-- 🔎 Busca dinâmica
+* Total de alunos cadastrados
+* Total de treinos cadastrados
+* Alunos ativos e inativos
+* Receita mensal estimada
+* Receita total estimada
+* Crescimento de alunos por mês
+* Indicadores estratégicos para acompanhamento do negócio
+* Integração com gráficos utilizando Recharts
 
 ---
 
-## 💪 Gestão de treinos
+## 👥 Gestão de Alunos
 
-- ➕ Criar treino
-- 🗑️ Remover treino
-- 📋 Listagem de treinos
-- 🏋️ Gestão de exercícios por treino
-- 🔗 Relacionamento entre alunos, treinos e exercícios
+### CRUD Completo
+
+* ➕ Criar aluno
+* ✏️ Editar aluno
+* 🗑️ Excluir aluno
+* 📋 Listagem paginada
+* 🔎 Busca dinâmica por nome
+* Controle de status ativo/inativo
+* Associação automática ao usuário autenticado
+
+### Planos Disponíveis
+
+* Básico
+* Intermediário
+* Avançado
+
+---
+
+## 💪 Gestão de Treinos
+
+### CRUD Completo
+
+* ➕ Criar treino
+* ✏️ Editar treino
+* 🗑️ Excluir treino
+* 📋 Listagem de treinos
+* Associação entre alunos e treinos
+* Validação automática de relacionamentos
+
+---
+
+## 🏋️ Gestão de Exercícios
+
+* ➕ Adicionar exercícios aos treinos
+* ✏️ Editar exercícios
+* 🗑️ Excluir exercícios
+
+### Controle de:
+
+* Nome do exercício
+* Séries
+* Repetições
+* Carga (kg)
 
 ---
 
 ## 🎨 UX e Interface
 
-- Layout estilo SaaS
-- Sidebar responsiva
-- Dashboard moderno
-- Modais para criação/edição
-- Feedback visual em tempo real
-- Toasts de sucesso e erro
-- Formulários validados
+* Layout moderno inspirado em SaaS
+* Sidebar responsiva
+* Dashboard interativo
+* Modais para criação e edição
+* Feedback visual em tempo real
+* Toasts de sucesso e erro
+* Formulários validados
+* Navegação intuitiva
 
 ---
 
-# 🛠️ Tecnologias utilizadas
+# 🛠️ Tecnologias Utilizadas
 
 ## Frontend
 
-- React
-- TypeScript
-- TailwindCSS
-- React Router DOM
+* React
+* TypeScript
+* Vite
+* TailwindCSS
+* React Router DOM
 
 ---
 
 ## Backend
 
-- Node.js
-- Express
-- Prisma ORM
-- PostgreSQL
-- JWT Authentication
-- Multer
+* Node.js
+* Express
+* TypeScript
+* Prisma ORM
+* PostgreSQL
+* JWT Authentication
+* bcrypt
 
 ---
 
 ## Bibliotecas
 
-- React Hook Form
-- Zod
-- Recharts
-- React Hot Toast
-- Lucide React
+* React Hook Form
+* Zod
+* Recharts
+* React Hot Toast
+* Lucide React
 
 ---
 
@@ -97,76 +133,104 @@ https://workout-flow-fj5g-lucas-vasconcelos-s-projects.vercel.app/
 
 O projeto possui configuração Docker para facilitar:
 
-- Ambiente de desenvolvimento
-- Padronização do ambiente
-- Deploy
-- Integração com banco de dados
+* Ambiente de desenvolvimento
+* Padronização do ambiente
+* Deploy
+* Integração com banco de dados PostgreSQL
 
-## Tecnologias containerizadas
+## Tecnologias Containerizadas
 
-- Frontend React
-- Backend Node.js
-- PostgreSQL
+* Frontend React
+* Backend Node.js
+* PostgreSQL
 
 ---
 
-# 🧱 Arquitetura do projeto
+# 🧱 Arquitetura do Projeto
 
 ## Frontend
 
 ```bash
 src/
- ├── components/
- ├── layouts/
- ├── pages/
- ├── schemas/
- ├── services/
- ├── types/
- └── routes/
+├── components/
+├── layouts/
+├── pages/
+├── routes/
+├── schemas/
+├── services/
+├── types/
+└── config/
 ```
-
----
 
 ## Backend
 
 ```bash
-server/
- ├── middleware/
- ├── routes/
- ├── auth/
- ├── config/
- ├── lib/
- └── prisma/
+src/
+├── auth/
+├── controllers/
+├── middleware/
+├── routes/
+├── schemas/
+├── services/
+├── lib/
+├── prisma/
+└── server.ts
 ```
 
 ---
 
-# 🔐 Segurança implementada
+# 🗄️ Modelagem de Dados
 
-- Autenticação JWT
-- Proteção de rotas
-- Validação de ownership por usuário
-- Isolamento de dados multiusuário
-- Validação de formulários
-- Tratamento de erros
-- Upload seguro de imagens
+Relacionamentos implementados:
+
+```text
+User
+ ├── Students
+ └── Workouts
+
+Student
+ └── Workouts
+
+Workout
+ └── Exercises
+```
 
 ---
 
-# 🧠 Conceitos aplicados
+# 🔐 Segurança Implementada
 
-- CRUD completo
-- API REST
-- Arquitetura modular
-- Componentização
-- Middleware de autenticação
-- Upload de arquivos
-- Relacionamentos com Prisma
-- Paginação
-- Busca dinâmica
-- Validação com Zod
-- Gerenciamento de estado com Hooks
-- UI/UX moderna inspirada em SaaS
+* Autenticação JWT
+* Hash de senhas com bcrypt
+* Proteção de rotas privadas
+* Isolamento multiusuário
+* Validação de dados com Zod
+* Validação de relacionamentos no backend
+* Tratamento centralizado de erros
+* Tipagem forte com TypeScript
+
+---
+
+# 🧠 Conceitos Aplicados
+
+* CRUD Completo
+* API REST
+* Arquitetura em Camadas
+* TypeScript Fullstack
+* Prisma ORM
+* PostgreSQL
+* Docker e Docker Compose
+* JWT Authentication
+* Validação com Zod
+* Paginação
+* Busca dinâmica
+* Relacionamentos entre entidades
+* Dashboards analíticos
+* Visualização de dados com gráficos
+* Componentização React
+* Hooks
+* Clean Code
+* Responsividade
+* UX/UI inspirada em SaaS
 
 ---
 
@@ -178,13 +242,13 @@ Hospedado na Vercel.
 
 ## Backend
 
-API Node.js integrada ao PostgreSQL utilizando Prisma ORM.
+API Node.js hospedada na Render e integrada ao PostgreSQL utilizando Prisma ORM.
 
 ---
 
-# 🚀 Como executar o projeto
+# 🚀 Como Executar o Projeto
 
-## Clone o repositório
+## Clone o Repositório
 
 ```bash
 git clone <URL_DO_REPOSITORIO>
@@ -192,7 +256,7 @@ git clone <URL_DO_REPOSITORIO>
 
 ---
 
-## Instale as dependências
+## Instale as Dependências
 
 ### Frontend
 
@@ -208,35 +272,32 @@ npm install
 
 ---
 
-## Configure as variáveis de ambiente
+## Configure as Variáveis de Ambiente
 
-Crie um arquivo `.env` no backend:
+### Backend (.env)
 
 ```env
 DATABASE_URL=
 JWT_SECRET=
-CLOUDINARY_CLOUD_NAME=
-CLOUDINARY_API_KEY=
-CLOUDINARY_API_SECRET=
+```
+
+### Frontend (.env)
+
+```env
+VITE_API_URL=
 ```
 
 ---
 
-## Execute com Docker
+## Executar com Docker
 
 ```bash
-docker-compose up
+docker compose up --build
 ```
 
 ---
 
-## Execute localmente
-
-### Frontend
-
-```bash
-npm run dev
-```
+## Executar Localmente
 
 ### Backend
 
@@ -244,20 +305,25 @@ npm run dev
 npm run dev
 ```
 
+### Frontend
+
+```bash
+npm run dev
+```
+
 ---
 
-# 💼 Sobre o projeto
+# 💼 Sobre o Projeto
 
-O WorkoutFlow foi desenvolvido como um projeto fullstack com arquitetura moderna, simulando um sistema real de gestão para academias.
+O WorkoutFlow foi desenvolvido como um projeto Fullstack moderno para simular uma aplicação real de gestão de alunos, treinos e acompanhamento de métricas para personal trainers e academias.
 
-O objetivo principal foi aplicar boas práticas de desenvolvimento frontend e backend, incluindo autenticação, segurança, organização de código e experiência do usuário.
+O projeto aplica boas práticas de desenvolvimento frontend e backend, autenticação segura, arquitetura escalável, validação de dados, containerização com Docker e visualização de informações através de dashboards analíticos.
 
 ---
 
 # 👨‍💻 Autor
 
-Desenvolvido por Lucas Vasconcelos  
-📍 Brasil
+Lucas Vasconcelos
 
 ---
 
@@ -265,8 +331,9 @@ Desenvolvido por Lucas Vasconcelos
 
 Se gostou do projeto:
 
-- Deixe uma estrela no repositório
-- Compartilhe o projeto
-- Envie sugestões e feedbacks
+* Deixe uma ⭐ no repositório
+* Compartilhe o projeto
+* Envie sugestões e feedbacks
+* Conecte-se comigo no LinkedIn
 
 ---
